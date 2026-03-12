@@ -20,10 +20,13 @@ class Categorie
     #[Groups(['categorie:read', 'livre:read'])]
     private ?int $id = null;
 
+<<<<<<< 3-CRUD-categories
     #[ORM\Column]
     #[Groups(['categorie:read', 'categorie:write', 'livre:read'])]
     private ?int $idCat = null;
 
+=======
+>>>>>>> master
     #[ORM\Column(length: 255)]
     #[Groups(['categorie:read', 'categorie:write', 'livre:read'])]
     private ?string $nom = null;
@@ -48,18 +51,6 @@ class Categorie
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdCat(): ?int
-    {
-        return $this->idCat;
-    }
-
-    public function setIdCat(int $idCat): static
-    {
-        $this->idCat = $idCat;
-
-        return $this;
     }
 
     public function getNom(): ?string
@@ -111,5 +102,10 @@ class Categorie
         }
 
         return $this;
+    }
+    
+    public function __toString(): string
+    {
+        return $this->nom ?? '';
     }
 }

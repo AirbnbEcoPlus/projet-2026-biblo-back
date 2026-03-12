@@ -2,15 +2,21 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Article;
+use App\Entity\Adherent;
+use App\Entity\Auteur;
 use App\Entity\Categorie;
+use App\Entity\Emprunt;
+use App\Entity\Livre;
+use App\Entity\Reservation;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Attribute\AdminDashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Dashboard;
 use EasyCorp\Bundle\EasyAdminBundle\Config\MenuItem;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractDashboardController;
+use PhpParser\Node\Expr\Cast;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Config\Framework\Validation\AutoMappingConfig;
 
 #[AdminDashboard(routePath: '/admin', routeName: 'admin')]
 class DashboardController extends AbstractDashboardController
@@ -22,14 +28,12 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         $nbCategories = $this->em->getRepository(Categorie::class)->count([]);
-        $nbArticles = $this->em->getRepository(Article::class)->count([]);
-        $nbArticlesPublies = $this->em->getRepository(Article::class)->count(['publie' => true]);
+        $nbLivres = $this->em->getRepository(Livre::class)->count([]);
         $nbUtilisateurs = $this->em->getRepository(Utilisateur::class)->count([]);
 
         return $this->render('admin/dashboard.html.twig', [
             'nbCategories' => $nbCategories,
-            'nbArticles' => $nbArticles,
-            'nbArticlesPublies' => $nbArticlesPublies,
+            'nbLivres' => $nbLivres,
             'nbUtilisateurs' => $nbUtilisateurs,
         ]);
     }
@@ -37,14 +41,18 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('POC Articles - Administration');
+            ->setTitle('Bibliothèque - Administration');
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
-        yield MenuItem::linkToCrud('Catégories', 'fas fa-tags', Categorie::class);
-        yield MenuItem::linkToCrud('Articles', 'fas fa-newspaper', Article::class);
-        yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', Utilisateur::class);
+        // yield MenuItem::linkTo(AdherentCrudController::class, 'Adhérents', 'fas fa-id-card', Adherent::class);
+        // yield MenuItem::linkTo(AuteurCrudController::class, 'Auteurs', 'fas fa-pen-fancy', Auteur::class);
+        // yield MenuItem::linkTo(CategorieCrudController::class, 'Catégories', 'fas fa-layer-group', Categorie::class);
+        // yield MenuItem::linkTo(EmpruntCrudController::class, 'Emprunts', 'fas fa-arrow-right-arrow-left', Emprunt::class);
+        // yield MenuItem::linkTo(ReservationCrudcontroller::class, 'Réservations', 'fas fa-bookmark', Reservation::class);
+        yield MenuItem::linkTo(LivreCrudController::class, 'Livres', 'fas fa-book', Livre::class);
+        yield MenuItem::linkTo(UtilisateurCrudController::class, 'Utilisateurs', 'fas fa-user-shield', Utilisateur::class);
     }
 }
