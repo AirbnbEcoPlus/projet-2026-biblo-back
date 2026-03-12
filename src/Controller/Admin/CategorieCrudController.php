@@ -2,26 +2,25 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Reservation;
+use App\Entity\Categorie;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\DateTimeField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 
-
-class ReservationCrudController extends AbstractCrudController
+class CategorieCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return Reservation::class;
+        return Categorie::class;
     }
 
     public function configureFields(string $pageName): iterable
     {
         return [
             IdField::new('id')->hideOnForm(),
-            DateTimeField::new('dateResa', 'Date de réservation'),
-            AssociationField::new('livre', 'Livre réservé'),
+            TextField::new('nom'),
+            TextareaField::new('description'),
         ];
     }
 }

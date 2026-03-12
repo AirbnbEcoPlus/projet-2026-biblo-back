@@ -25,7 +25,7 @@ class LivreCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('titre'),
             AssociationField::new('auteurs'),
-            AssociationField::new('categories'),
+            AssociationField::new('categories', 'Catégories'),
             DateField::new('dateSortie', 'Date de sortie'),
             LanguageField::new('langue'),
             UrlField::new('photoCouverture', 'Photo de la couverture'),
