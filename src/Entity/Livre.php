@@ -55,12 +55,8 @@ class Livre
      * @var Collection<int, Categorie>
      */
     #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'livres')]
-<<<<<<< 3-CRUD-categories
     #[Groups(['livre:read'])]
     private Collection $categorie;
-=======
-    private Collection $categories;
->>>>>>> master
 
     public function __construct()
     {
