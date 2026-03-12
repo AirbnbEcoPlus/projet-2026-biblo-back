@@ -16,9 +16,6 @@ class Reservation
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idResa = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateResa = null;
 
@@ -31,18 +28,6 @@ class Reservation
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdResa(): ?int
-    {
-        return $this->idResa;
-    }
-
-    public function setIdResa(int $idResa): static
-    {
-        $this->idResa = $idResa;
-
-        return $this;
     }
 
     public function getDateResa(): ?\DateTime

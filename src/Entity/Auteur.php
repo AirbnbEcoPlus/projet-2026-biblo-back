@@ -18,9 +18,6 @@ class Auteur
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idAut = null;
-
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
@@ -45,7 +42,7 @@ class Auteur
     /**
      * @var Collection<int, Livre>
      */
-    #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'auteur')]
+    #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'auteurs')]
     private Collection $livres;
 
     public function __construct()
@@ -57,18 +54,6 @@ class Auteur
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdAut(): ?int
-    {
-        return $this->idAut;
-    }
-
-    public function setIdAut(int $idAut): static
-    {
-        $this->idAut = $idAut;
-
-        return $this;
     }
 
     public function getNom(): ?string
@@ -180,5 +165,10 @@ class Auteur
         }
 
         return $this;
+    }
+
+    public function __toString(): string
+    {
+        return $this->nom + ' ' + $this->prenom ?? '';
     }
 }

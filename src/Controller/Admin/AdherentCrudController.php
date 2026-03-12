@@ -2,19 +2,18 @@
 
 namespace App\Controller\Admin;
 
-use App\Entity\Auteur;
+use App\Entity\Adherent;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
 
-class AuteurCrudController extends AbstractCrudController
+class AdherentCrudController extends AbstractCrudController
 {
     public static function getEntityFqcn(): string
     {
-        return Auteur::class;
+        return Adherent::class;
     }
 
     public function configureFields(string $pageName): iterable
@@ -23,11 +22,12 @@ class AuteurCrudController extends AbstractCrudController
             IdField::new('id')->hideOnForm(),
             TextField::new('nom'),
             TextField::new('prenom'),
-            DateField::new('dateNaissance', 'Date de naissance'),
-            TextField::new('dateDeces', 'Date de décès')->hideOnIndex(),
-            TextField::new('nationalite', 'Nationalité'),
+            DateField::new('dateNaiss', 'Date de naissance'),
+            DateField::new('dateAdhesion', 'Date d\'adhésion'),
+            TextField::new('email')->hideOnIndex(),
+            TextField::new('adressePostale', 'Adresse postale')->hideOnIndex(),
+            TextField::new('numTel', 'Téléphone')->hideOnIndex(),
             UrlField::new('photo')->hideOnIndex(),
-            TextareaField::new('description')->hideOnIndex(),
         ];
     }
 }

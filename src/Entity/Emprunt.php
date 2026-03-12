@@ -16,16 +16,13 @@ class Emprunt
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idEmp = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateEmprunt = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateRetour = null;
 
-    #[ORM\ManyToOne(inversedBy: 'emprunt')]
+    #[ORM\ManyToOne(inversedBy: 'emprunts')]
     private ?Adherent $adherent = null;
 
     #[ORM\ManyToOne(inversedBy: 'emprunts')]
@@ -34,18 +31,6 @@ class Emprunt
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdEmp(): ?int
-    {
-        return $this->idEmp;
-    }
-
-    public function setIdEmp(int $idEmp): static
-    {
-        $this->idEmp = $idEmp;
-
-        return $this;
     }
 
     public function getDateEmprunt(): ?\DateTime

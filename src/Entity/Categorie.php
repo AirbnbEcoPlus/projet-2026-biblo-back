@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
 #[ApiResource]
@@ -16,22 +17,22 @@ class Categorie
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['categorie:read', 'livre:read'])]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idCat = null;
-
     #[ORM\Column(length: 255)]
+    #[Groups(['categorie:read', 'categorie:write', 'livre:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['categorie:read', 'categorie:write', 'livre:read'])]
     private ?string $description = null;
 
     /**
      * @var Collection<int, Livre>
      */
-    #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'categorie')]
-    #[Assert\Count(min:1,max: 3,minMessage: "Un livre doit appartenir à au moins {{ limit }} catégorie.", maxMessage: "Un livre ne peut pas appartenir à plus de {{ limit }} catégories.")]
+    #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'categories')]
+    #[Groups(['categorie:read'])]
     private Collection $livres;
 
     public function __construct()
@@ -42,18 +43,6 @@ class Categorie
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdCat(): ?int
-    {
-        return $this->idCat;
-    }
-
-    public function setIdCat(int $idCat): static
-    {
-        $this->idCat = $idCat;
-
-        return $this;
     }
 
     public function getNom(): ?string
@@ -105,5 +94,10 @@ class Categorie
         }
 
         return $this;
+    }
+    
+    public function __toString(): string
+    {
+        return $this->nom ?? '';
     }
 }
