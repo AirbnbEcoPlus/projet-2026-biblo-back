@@ -47,7 +47,7 @@ class Adherent
      * @var Collection<int, Emprunt>
      */
     #[ORM\OneToMany(targetEntity: Emprunt::class, mappedBy: 'adherent')]
-    private Collection $emprunt;
+    private Collection $emprunts;
 
     /**
      * @var Collection<int, Reservation>
@@ -58,7 +58,7 @@ class Adherent
 
     public function __construct()
     {
-        $this->emprunt = new ArrayCollection();
+        $this->emprunts = new ArrayCollection();
         $this->reservations = new ArrayCollection();
     }
 
@@ -166,15 +166,15 @@ class Adherent
     /**
      * @return Collection<int, Emprunt>
      */
-    public function getEmprunt(): Collection
+    public function getEmprunts(): Collection
     {
-        return $this->emprunt;
+        return $this->emprunts;
     }
 
     public function addEmprunt(Emprunt $emprunt): static
     {
-        if (!$this->emprunt->contains($emprunt)) {
-            $this->emprunt->add($emprunt);
+        if (!$this->emprunts->contains($emprunt)) {
+            $this->emprunts->add($emprunt);
             $emprunt->setAdherent($this);
         }
 
@@ -183,7 +183,7 @@ class Adherent
 
     public function removeEmprunt(Emprunt $emprunt): static
     {
-        if ($this->emprunt->removeElement($emprunt)) {
+        if ($this->emprunts->removeElement($emprunt)) {
             // set the owning side to null (unless already changed)
             if ($emprunt->getAdherent() === $this) {
                 $emprunt->setAdherent(null);

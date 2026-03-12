@@ -56,7 +56,7 @@ class Livre
      */
     #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'livres')]
     #[Groups(['livre:read'])]
-    private Collection $categorie;
+    private Collection $categories;
 
     public function __construct()
     {
