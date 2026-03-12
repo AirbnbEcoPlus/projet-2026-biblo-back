@@ -60,7 +60,6 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkTo(EmpruntCrudController::class, 'Emprunts', 'fas fa-arrow-right-arrow-left', Emprunt::class);
         yield MenuItem::linkTo(ReservationCrudController::class, 'Réservations', 'fas fa-bookmark', Reservation::class);
         yield MenuItem::linkTo(LivreCrudController::class, 'Livres', 'fas fa-book', Livre::class);
-        yield MenuItem::linkTo(ReservationCrudController::class, 'Réservations', 'fas fa-bookmark', Reservation::class);
         yield MenuItem::linkTo(UtilisateurCrudController::class, 'Utilisateurs', 'fas fa-user-shield', Utilisateur::class);
         
     }
