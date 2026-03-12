@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LivreRepository::class)]
 #[ApiResource]
@@ -16,18 +17,30 @@ class Livre
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['livre:read', 'categorie:read'])]
     private ?int $id = null;
 
+<<<<<<< 3-CRUD-categories
+    #[ORM\Column]
+    #[Groups(['livre:read', 'categorie:read'])]
+    private ?int $idLivre = null;
+
+=======
+>>>>>>> master
     #[ORM\Column(length: 255)]
+    #[Groups(['livre:read', 'categorie:read'])]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['livre:read', 'categorie:read'])]
     private ?\DateTime $dateSortie = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['livre:read', 'categorie:read'])]
     private ?string $langue = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['livre:read', 'categorie:read'])]
     private ?string $photoCouverture = null;
 
     /**
@@ -49,7 +62,12 @@ class Livre
      * @var Collection<int, Categorie>
      */
     #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'livres')]
+<<<<<<< 3-CRUD-categories
+    #[Groups(['livre:read'])]
+    private Collection $categorie;
+=======
     private Collection $categories;
+>>>>>>> master
 
     public function __construct()
     {

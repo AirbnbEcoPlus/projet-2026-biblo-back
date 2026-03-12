@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: CategorieRepository::class)]
 #[ApiResource]
@@ -16,18 +17,29 @@ class Categorie
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['categorie:read', 'livre:read'])]
     private ?int $id = null;
 
+<<<<<<< 3-CRUD-categories
+    #[ORM\Column]
+    #[Groups(['categorie:read', 'categorie:write', 'livre:read'])]
+    private ?int $idCat = null;
+
+=======
+>>>>>>> master
     #[ORM\Column(length: 255)]
+    #[Groups(['categorie:read', 'categorie:write', 'livre:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['categorie:read', 'categorie:write', 'livre:read'])]
     private ?string $description = null;
 
     /**
      * @var Collection<int, Livre>
      */
     #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'categorie')]
+    #[Groups(['categorie:read'])]
     #[Assert\Count(min:1,max: 3,minMessage: "Un livre doit appartenir à au moins {{ limit }} catégorie.", maxMessage: "Un livre ne peut pas appartenir à plus de {{ limit }} catégories.")]
     private Collection $livres;
 
