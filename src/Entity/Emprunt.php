@@ -22,7 +22,7 @@ class Emprunt
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateRetour = null;
 
-    #[ORM\ManyToOne(inversedBy: 'emprunt')]
+    #[ORM\ManyToOne(inversedBy: 'emprunts')]
     private ?Adherent $adherent = null;
 
     #[ORM\ManyToOne(inversedBy: 'emprunts')]

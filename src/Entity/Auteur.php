@@ -42,7 +42,7 @@ class Auteur
     /**
      * @var Collection<int, Livre>
      */
-    #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'auteur')]
+    #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'auteurs')]
     private Collection $livres;
 
     public function __construct()

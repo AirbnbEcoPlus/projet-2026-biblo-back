@@ -31,9 +31,8 @@ class Categorie
     /**
      * @var Collection<int, Livre>
      */
-    #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'categorie')]
+    #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'categories')]
     #[Groups(['categorie:read'])]
-    #[Assert\Count(min:1,max: 3,minMessage: "Un livre doit appartenir à au moins {{ limit }} catégorie.", maxMessage: "Un livre ne peut pas appartenir à plus de {{ limit }} catégories.")]
     private Collection $livres;
 
     public function __construct()
