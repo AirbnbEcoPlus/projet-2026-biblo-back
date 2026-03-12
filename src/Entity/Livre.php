@@ -18,9 +18,6 @@ class Livre
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idLivre = null;
-
     #[ORM\Column(length: 255)]
     private ?string $titre = null;
 
@@ -52,30 +49,18 @@ class Livre
      * @var Collection<int, Categorie>
      */
     #[ORM\ManyToMany(targetEntity: Categorie::class, inversedBy: 'livres')]
-    private Collection $categorie;
+    private Collection $categories;
 
     public function __construct()
     {
         $this->emprunts = new ArrayCollection();
         $this->auteurs = new ArrayCollection();
-        $this->categorie = new ArrayCollection();
+        $this->categories = new ArrayCollection();
     }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdLivre(): ?int
-    {
-        return $this->idLivre;
-    }
-
-    public function setIdLivre(int $idLivre): static
-    {
-        $this->idLivre = $idLivre;
-
-        return $this;
     }
 
     public function getTitre(): ?string
@@ -159,7 +144,7 @@ class Livre
     /**
      * @return Collection<int, Auteur>
      */
-    public function getAuteur(): Collection
+    public function getAuteurs(): Collection
     {
         return $this->auteurs;
     }
@@ -195,15 +180,15 @@ class Livre
     /**
      * @return Collection<int, Categorie>
      */
-    public function getCategorie(): Collection
+    public function getCategories(): Collection
     {
-        return $this->categorie;
+        return $this->categories;
     }
 
     public function addCategorie(Categorie $categorie): static
     {
-        if (!$this->categorie->contains($categorie)) {
-            $this->categorie->add($categorie);
+        if (!$this->categories->contains($categorie)) {
+            $this->categories->add($categorie);
         }
 
         return $this;
@@ -211,7 +196,7 @@ class Livre
 
     public function removeCategorie(Categorie $categorie): static
     {
-        $this->categorie->removeElement($categorie);
+        $this->categories->removeElement($categorie);
 
         return $this;
     }
