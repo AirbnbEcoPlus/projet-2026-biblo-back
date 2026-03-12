@@ -29,11 +29,13 @@ class DashboardController extends AbstractDashboardController
     {
         $nbCategories = $this->em->getRepository(Categorie::class)->count([]);
         $nbLivres = $this->em->getRepository(Livre::class)->count([]);
+        $nbReservations = $this->em->getRepository(Reservation::class)->count([]);
         $nbUtilisateurs = $this->em->getRepository(Utilisateur::class)->count([]);
 
         return $this->render('admin/dashboard.html.twig', [
             'nbCategories' => $nbCategories,
             'nbLivres' => $nbLivres,
+            'nbReservations' => $nbReservations,
             'nbUtilisateurs' => $nbUtilisateurs,
         ]);
     }
@@ -53,6 +55,8 @@ class DashboardController extends AbstractDashboardController
         // yield MenuItem::linkTo(EmpruntCrudController::class, 'Emprunts', 'fas fa-arrow-right-arrow-left', Emprunt::class);
         // yield MenuItem::linkTo(ReservationCrudcontroller::class, 'Réservations', 'fas fa-bookmark', Reservation::class);
         yield MenuItem::linkTo(LivreCrudController::class, 'Livres', 'fas fa-book', Livre::class);
+        yield MenuItem::linkTo(ReservationCrudController::class, 'Réservations', 'fas fa-bookmark', Reservation::class);
         yield MenuItem::linkTo(UtilisateurCrudController::class, 'Utilisateurs', 'fas fa-user-shield', Utilisateur::class);
+        
     }
 }
