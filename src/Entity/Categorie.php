@@ -18,9 +18,6 @@ class Categorie
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idCat = null;
-
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
@@ -42,18 +39,6 @@ class Categorie
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdCat(): ?int
-    {
-        return $this->idCat;
-    }
-
-    public function setIdCat(int $idCat): static
-    {
-        $this->idCat = $idCat;
-
-        return $this;
     }
 
     public function getNom(): ?string
@@ -105,5 +90,10 @@ class Categorie
         }
 
         return $this;
+    }
+    
+    public function __toString(): string
+    {
+        return $this->nom ?? '';
     }
 }

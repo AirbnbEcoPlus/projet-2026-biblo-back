@@ -19,9 +19,6 @@ class Adherent
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column]
-    private ?int $idAdh = null;
-
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTime $dateAdhesion = null;
 
@@ -68,18 +65,6 @@ class Adherent
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function getIdAdh(): ?int
-    {
-        return $this->idAdh;
-    }
-
-    public function setIdAdh(int $idAdh): static
-    {
-        $this->idAdh = $idAdh;
-
-        return $this;
     }
 
     public function getDateAdhesion(): ?\DateTime
