@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Article;
+use App\Entity\Auteur;
 use App\Entity\Categorie;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
@@ -22,14 +23,12 @@ class DashboardController extends AbstractDashboardController
     public function index(): Response
     {
         $nbCategories = $this->em->getRepository(Categorie::class)->count([]);
-        $nbArticles = $this->em->getRepository(Article::class)->count([]);
-        $nbArticlesPublies = $this->em->getRepository(Article::class)->count(['publie' => true]);
+        $nbAuteurs = $this->em->getRepository(Auteur::class)->count([]);
         $nbUtilisateurs = $this->em->getRepository(Utilisateur::class)->count([]);
 
         return $this->render('admin/dashboard.html.twig', [
             'nbCategories' => $nbCategories,
-            'nbArticles' => $nbArticles,
-            'nbArticlesPublies' => $nbArticlesPublies,
+            'nbAuteurs' => $nbAuteurs,
             'nbUtilisateurs' => $nbUtilisateurs,
         ]);
     }
@@ -37,14 +36,14 @@ class DashboardController extends AbstractDashboardController
     public function configureDashboard(): Dashboard
     {
         return Dashboard::new()
-            ->setTitle('POC Articles - Administration');
+            ->setTitle('Bibliothèque - Administration');
     }
 
     public function configureMenuItems(): iterable
     {
         yield MenuItem::linkToDashboard('Dashboard', 'fa fa-home');
         yield MenuItem::linkToCrud('Catégories', 'fas fa-tags', Categorie::class);
-        yield MenuItem::linkToCrud('Articles', 'fas fa-newspaper', Article::class);
+        yield MenuItem::linkToCrud('Auteur', 'fas fa-newspaper', Auteur::class);
         yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-users', Utilisateur::class);
     }
 }
