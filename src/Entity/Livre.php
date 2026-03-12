@@ -20,13 +20,6 @@ class Livre
     #[Groups(['livre:read', 'categorie:read'])]
     private ?int $id = null;
 
-<<<<<<< 3-CRUD-categories
-    #[ORM\Column]
-    #[Groups(['livre:read', 'categorie:read'])]
-    private ?int $idLivre = null;
-
-=======
->>>>>>> master
     #[ORM\Column(length: 255)]
     #[Groups(['livre:read', 'categorie:read'])]
     private ?string $titre = null;
