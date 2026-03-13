@@ -5,6 +5,7 @@ namespace App\Controller\Api;
 use App\Entity\Reservation;
 use App\Repository\AdherentRepository;
 use App\Repository\ReservationRepository;
+use App\Repository\LivreRepository;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,16 +31,22 @@ class ReservationController extends AbstractController
     }
 
     #[Route('/reservations', name: 'api_reservation_create', methods: ['POST'])]
-    public  function create(Request $request, EntityManagerInterface $em, AdherentRepository $adherentRepository): JsonResponse
-    {
-        $data = json_decode($request -> getContent(), true);
-        $reservation = new Reservation();
-        $reservation->setAdherent($data['adherent']);
-        $reservation->setLivre($data['livre']);
-        $reservation->setDateResa(new \DateTime());
-        
-        return $this->json($reservation, 201, [], ['groups' => 'reservation:read']);
+public function create(Request $request, EntityManagerInterface $em, AdherentRepository $adherentRepo, LivreRepository $livreRepo): JsonResponse
+{
+    $data = json_decode($request->getContent(), true);
 
-    }
+    $adherent = $adherentRepo->find($data['adherent']);
+    $livre = $livreRepo->find($data['livre']);
+
+    $reservation = new Reservation();
+    $reservation->setAdherent($adherent);
+    $reservation->setLivre($livre);
+    $reservation->setDateResa(new \DateTime());
+
+    $em->persist($reservation);
+    $em->flush();
+    
+    return $this->json($reservation, 201, [], ['groups' => 'reservation:read']);
+}
 
 }
