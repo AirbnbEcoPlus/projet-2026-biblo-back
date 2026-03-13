@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ReservationRepository;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,15 +15,19 @@ class Reservation
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['reservation:read', 'adherent:read', 'livre:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['reservation:read', 'adherent:read', 'livre:read'])]
     private ?\DateTime $dateResa = null;
 
     #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
+    #[Groups(['livre:read', 'reservation:read'])]
     private ?Livre $livre = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
+    #[Groups(['reservation:read', 'adherent:read'])]
     private ?Adherent $adherent = null;
 
     public function getId(): ?int

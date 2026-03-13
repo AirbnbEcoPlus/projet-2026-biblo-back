@@ -51,15 +51,18 @@ class Livre
      * @var Collection<int, Emprunt>
      */
     #[ORM\OneToMany(targetEntity: Emprunt::class, mappedBy: 'livre')]
+    #[Groups(['livre:read'])]
     private Collection $emprunts;
 
     /**
      * @var Collection<int, Auteur>
      */
     #[ORM\ManyToMany(targetEntity: Auteur::class, inversedBy: 'livres')]
+        #[Groups(['livre:read'])]
     private Collection $auteurs ;
 
     #[ORM\OneToOne(inversedBy: 'livre', cascade: ['persist', 'remove'])]
+    #[Groups(['livre:read'])]
     private ?Reservation $reservation = null;
 
     /**
@@ -218,4 +221,9 @@ class Livre
 
         return $this;
     }
+
+    public function __toString(): string
+{
+    return (string) $this->titre;
+}
 }
