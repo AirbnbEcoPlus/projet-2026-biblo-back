@@ -63,6 +63,9 @@ class Adherent
     #[Groups(['adherent:read'])]
     private Collection $reservations;
 
+    #[ORM\OneToOne(mappedBy: 'adherent')]
+    private ?Utilisateur $utilisateur = null;
+
     public function __construct()
     {
         $this->emprunts = new ArrayCollection();
@@ -109,6 +112,17 @@ class Adherent
 
         return $this;
     }
+
+    public function getUtilisateur(): ?Utilisateur
+    {
+        return $this->utilisateur;
+    }
+
+    public function setUtilisateur(?Utilisateur $utilisateur): static
+    {
+        $this->utilisateur = $utilisateur;
+        return $this;
+    }   
 
     public function getDateNaiss(): ?\DateTime
     {
