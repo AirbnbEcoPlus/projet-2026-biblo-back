@@ -38,6 +38,13 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 100)]
     private ?string $prenom = null;
 
+    #[ORM\OneToOne(targetEntity: Adherent::class, cascade: ['persist'])]
+    #[ORM\JoinColumn(nullable: true, onDelete: 'SET NULL')]
+    private ?Adherent $adherent = null;
+
+
+
+
 
     public function getNom(): ?string
     {
@@ -48,6 +55,18 @@ class Utilisateur implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->nom = $nom;
 
+        return $this;
+    }
+
+
+    public function getAdherent(): ?Adherent
+    {
+        return $this->adherent;
+    }
+
+    public function setAdherent(?Adherent $adherent): static
+    {
+        $this->adherent = $adherent;
         return $this;
     }
 
