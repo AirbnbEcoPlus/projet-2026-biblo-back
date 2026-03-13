@@ -8,10 +8,21 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LivreRepository::class)]
 #[ApiResource]
+#[ApiFilter(SearchFilter::class, properties: [
+    'titre' => 'partial', 
+    'langue' => 'exact', 
+    'categories' => 'exact',
+    'auteurs' => 'exact'
+])]
+// Filtre pour la période de date
+#[ApiFilter(DateFilter::class, properties: ['dateSortie'])]
 class Livre
 {
     #[ORM\Id]
