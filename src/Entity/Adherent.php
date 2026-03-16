@@ -247,4 +247,9 @@ class Adherent
 
         return $this;
     }
+
+    public function __toString(): string
+    {
+        return trim(($this->getPrenom() ?? '').' '.($this->getNom() ?? ''));
+    }
 }
