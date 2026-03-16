@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\AdherentRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
@@ -12,16 +11,16 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: AdherentRepository::class)]
-#[ApiResource]
 class Adherent
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['adherent:read', 'reservation:read', 'emprunt:read'])]
+    #[Groups(['adherent:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['adherent:read', 'reservation:read', 'emprunt:read'])]
     private ?\DateTime $dateAdhesion = null;
 
     #[ORM\Column(length: 255)]
@@ -33,18 +32,23 @@ class Adherent
     private ?string $prenom = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['adherent:read'])]
     private ?\DateTime $dateNaiss = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['adherent:read'])]
     private ?string $email = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['adherent:read'])]
     private ?string $adressePostale = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['adherent:read'])]
     private ?string $numTel = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Groups(['adherent:read', 'reservation:read', 'emprunt:read'])]
     private ?string $photo = null;
 
     /**
