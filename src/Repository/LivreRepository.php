@@ -21,7 +21,7 @@ class LivreRepository extends ServiceEntityRepository
      */
     public function findByCriteres(array $criteres): array
     {
-        $qb = $this->createQueryBuilder('livre');
+        $qb = $this->createQueryBuilder('livre')->distinct();
 
         // 1. Filtre par titre (Recherche partielle)
         if (!empty($criteres['titre'])) {
@@ -38,11 +38,18 @@ class LivreRepository extends ServiceEntityRepository
         // 3. Filtre par Catégorie (Relation ManyToMany)
         if (!empty($criteres['categorie'])) {
             $qb->innerJoin('livre.categories', 'c')
-            ->andWhere('c.id = :catId')
-            ->setParameter('catId', $criteres['categorie']);
+            ->andWhere('LOWER(c.nom) LIKE LOWER(:catNom)')
+            ->setParameter('catNom', '%' . $criteres['categorie'] . '%');
         }
 
-        // 4. Filtre par Période (Date de sortie)
+        // 4. Filtre par auteur (nom ou prénom, recherche partielle)
+        if (!empty($criteres['auteur'])) {
+            $qb->innerJoin('livre.auteurs', 'a')
+            ->andWhere('LOWER(a.nom) LIKE LOWER(:auteur) OR LOWER(a.prenom) LIKE LOWER(:auteur)')
+            ->setParameter('auteur', '%' . $criteres['auteur'] . '%');
+        }
+
+        // 5. Filtre par Période (Date de sortie)
         if (!empty($criteres['dateDebut'])) {
             $qb->andWhere('livre.dateSortie >= :debut')
             ->setParameter('debut', new \DateTime($criteres['dateDebut']));

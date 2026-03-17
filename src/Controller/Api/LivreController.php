@@ -18,8 +18,8 @@ class LivreController extends AbstractController
         $criteres = [
             'titre'   => $request->query->get('titre'),
             'langue' => $request->query->get('langue'),
-            'categorieId' => $request->query->get('categorie'),
-            'auteurId' => $request->query->get('auteur'),
+            'categorie' => $request->query->get('categorie'),
+            'auteur' => $request->query->get('auteur'),
             'dateDebut' => $request->query->get('debut'),
             'dateFin' => $request->query->get('fin'),
         ];
