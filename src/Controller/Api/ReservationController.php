@@ -13,10 +13,10 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Attribute\Route;
 
-#[Route('/api')]
+#[Route('/api/reservations')]
 class ReservationController extends AbstractController
 {
-    #[Route('/reservations', name: 'api_reservations', methods: ['GET'])]
+    #[Route('', name: 'api_reservations', methods: ['GET'])]
     public function index(ReservationRepository $reservationRepository): JsonResponse
     {
         $reservations = $reservationRepository->findAll();
@@ -24,13 +24,13 @@ class ReservationController extends AbstractController
         return $this->json($reservations, 200, [], ['groups' => 'reservation:read']);
     }
 
-    #[Route('/reservations/{id}', name: 'api_reservations_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'api_reservations_show', methods: ['GET'])]
     public function show(Reservation $reservation): JsonResponse
     {
         return $this->json($reservation, 200, [], ['groups' => 'reservation:read']);
     }
 
-#[Route('/reservations', name: 'api_reservation_create', methods: ['POST'])]
+#[Route('', name: 'api_reservation_create', methods: ['POST'])]
 public function create(Request $request, EntityManagerInterface $em, AdherentRepository $adherentRepo, LivreRepository $livreRepo, ReservationRepository $reservationRepo): JsonResponse {
 
     $data = json_decode($request->getContent(), true);
