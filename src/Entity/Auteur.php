@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\AuteurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -14,15 +15,19 @@ class Auteur
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['auteur:read', 'livre:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['auteur:read', 'livre:read'])]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Groups(['auteur:read', 'livre:read'])]
     private ?string $prenom = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Groups(['auteur:read', 'livre:read'])]
     private ?\DateTime $dateNaissance = null;
 
     #[ORM\Column(length: 255, nullable: true)]
@@ -41,6 +46,7 @@ class Auteur
      * @var Collection<int, Livre>
      */
     #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'auteurs')]
+    #[Groups(['auteur:read'])]
     private Collection $livres;
 
     public function __construct()
