@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\EmpruntRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: EmpruntRepository::class)]
 class Emprunt
@@ -12,18 +13,22 @@ class Emprunt
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
+    #[Groups(['emprunt:read', 'adherent:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['emprunt:read', 'adherent:read'])]
     private ?\DateTime $dateEmprunt = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Groups(['emprunt:read', 'adherent:read'])]
     private ?\DateTime $dateRetour = null;
 
     #[ORM\ManyToOne(inversedBy: 'emprunts')]
     private ?Adherent $adherent = null;
 
     #[ORM\ManyToOne(inversedBy: 'emprunts')]
+    #[Groups(['emprunt:read', 'adherent:read'])]
     private ?Livre $livre = null;
 
     public function getId(): ?int

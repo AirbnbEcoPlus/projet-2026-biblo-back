@@ -27,6 +27,7 @@ class Reservation
 
 #[ORM\ManyToOne(targetEntity: Livre::class, inversedBy: 'reservations')]
 #[ORM\JoinColumn(name: 'livre_id', referencedColumnName: 'id', unique: true)]
+#[Groups(['reservation:read', 'adherent:read'])]
 private ?Livre $livre = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
