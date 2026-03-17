@@ -26,23 +26,23 @@ class Livre
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    #[Groups(['livre:read', 'categorie:read'])]
+    #[Groups(['livre:read', 'categorie:read', 'auteur:read'])]
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Groups(['livre:read', 'categorie:read'])]
+    #[Groups(['livre:read', 'categorie:read', 'auteur:read'])]
     private ?string $titre = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Groups(['livre:read', 'categorie:read'])]
+    #[Groups(['livre:read', 'categorie:read', 'auteur:read'])]
     private ?\DateTime $dateSortie = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['livre:read', 'categorie:read'])]
+    #[Groups(['livre:read', 'categorie:read', 'auteur:read'])]
     private ?string $langue = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['livre:read', 'categorie:read'])]
+    #[Groups(['livre:read', 'categorie:read', 'auteur:read'])]
     private ?string $photoCouverture = null;
 
     /**
