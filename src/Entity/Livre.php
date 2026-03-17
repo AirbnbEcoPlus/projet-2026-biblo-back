@@ -59,9 +59,8 @@ class Livre
         #[Groups(['livre:read'])]
     private Collection $auteurs ;
 
-    #[ORM\OneToOne(inversedBy: 'livre', cascade: ['persist', 'remove'])]
-    #[Groups(['livre:read'])]
-    private ?Reservation $reservation = null;
+#[ORM\OneToMany(targetEntity: Reservation::class, mappedBy: 'livre')]
+private Collection $reservations;
 
     /**
      * @var Collection<int, Categorie>
@@ -75,6 +74,7 @@ class Livre
         $this->emprunts = new ArrayCollection();
         $this->auteurs = new ArrayCollection();
         $this->categories = new ArrayCollection();
+    
     }
 
     public function getId(): ?int
@@ -184,17 +184,29 @@ class Livre
         return $this;
     }
 
-    public function getReservation(): ?Reservation
-    {
-        return $this->reservation;
-    }
+    public function getReservations(): Collection
+{
+    return $this->reservations;
+}
 
-    public function setReservation(?Reservation $reservation): static
-    {
-        $this->reservation = $reservation;
-
-        return $this;
+public function addReservation(Reservation $reservation): static
+{
+    if (!$this->reservations->contains($reservation)) {
+        $this->reservations->add($reservation);
+        $reservation->setLivre($this);
     }
+    return $this;
+}
+
+public function removeReservation(Reservation $reservation): static
+{
+    if ($this->reservations->removeElement($reservation)) {
+        if ($reservation->getLivre() === $this) {
+            $reservation->setLivre(null);
+        }
+    }
+    return $this;
+}
 
     /**
      * @return Collection<int, Categorie>
