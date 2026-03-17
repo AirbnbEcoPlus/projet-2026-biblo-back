@@ -30,13 +30,19 @@ class ReservationController extends AbstractController
         return $this->json($reservation, 200, [], ['groups' => 'reservation:read']);
     }
 
-    #[Route('/reservations', name: 'api_reservation_create', methods: ['POST'])]
-public function create(Request $request, EntityManagerInterface $em, AdherentRepository $adherentRepo, LivreRepository $livreRepo): JsonResponse
-{
+#[Route('/reservations', name: 'api_reservation_create', methods: ['POST'])]
+public function create(Request $request, EntityManagerInterface $em, AdherentRepository $adherentRepo, LivreRepository $livreRepo, ReservationRepository $reservationRepo): JsonResponse {
+
     $data = json_decode($request->getContent(), true);
 
     $adherent = $adherentRepo->find($data['adherent']);
     $livre = $livreRepo->find($data['livre']);
+
+    $reservationExistante = $reservationRepo->findOneBy(['livre' => $livre]);
+
+    if ($reservationExistante) {
+        return $this->json(['error' => 'Ce livre est déjà réservé'], 409);
+    }
 
     $reservation = new Reservation();
     $reservation->setAdherent($adherent);
@@ -45,7 +51,7 @@ public function create(Request $request, EntityManagerInterface $em, AdherentRep
 
     $em->persist($reservation);
     $em->flush();
-    
+
     return $this->json($reservation, 201, [], ['groups' => 'reservation:read']);
 }
 

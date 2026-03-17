@@ -6,9 +6,14 @@ use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ReservationRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\DBAL\Types\Types;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ReservationRepository::class)]
+#[UniqueEntity(
+    fields: ['livre'], 
+    message: 'Désolé, ce livre est déjà réservé'
+)]
 #[ApiResource]
 class Reservation
 {
@@ -22,13 +27,16 @@ class Reservation
     #[Groups(['reservation:read', 'adherent:read', 'livre:read'])]
     private ?\DateTime $dateResa = null;
 
-    #[ORM\OneToOne(mappedBy: 'reservation', cascade: ['persist', 'remove'])]
-    #[Groups(['livre:read', 'reservation:read'])]
-    private ?Livre $livre = null;
+#[ORM\ManyToOne(targetEntity: Livre::class, inversedBy: 'reservations')]
+#[ORM\JoinColumn(name: 'livre_id', referencedColumnName: 'id', unique: true)]
+private ?Livre $livre = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
     #[Groups(['reservation:read', 'adherent:read'])]
     private ?Adherent $adherent = null;
+
+    #[ORM\Column(length: 50)]
+private string $statut = 'en_attente';
 
     public function getId(): ?int
     {
@@ -52,22 +60,12 @@ class Reservation
         return $this->livre;
     }
 
-    public function setLivre(?Livre $livre): static
-    {
-        // unset the owning side of the relation if necessary
-        if ($livre === null && $this->livre !== null) {
-            $this->livre->setReservation(null);
-        }
-
-        // set the owning side of the relation if necessary
-        if ($livre !== null && $livre->getReservation() !== $this) {
-            $livre->setReservation($this);
-        }
-
-        $this->livre = $livre;
-
-        return $this;
-    }
+// Reservation.php
+public function setLivre(?Livre $livre): static
+{
+    $this->livre = $livre;
+    return $this;
+}
 
     public function getAdherent(): ?Adherent
     {
@@ -80,4 +78,21 @@ class Reservation
 
         return $this;
     }
+
+    public function getStatut(): string
+{
+    return $this->statut;
+}
+
+public function setStatut(string $statut): static
+{
+    $this->statut = $statut;
+    return $this;
+}
+
+
+public function __toString(): string
+{
+    return 'Réservation du livre ' . $this->getLivre() . ' du ' . $this->getDateResa()->format('d/m/Y');
+}
 }
