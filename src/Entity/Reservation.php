@@ -14,7 +14,6 @@ use Doctrine\ORM\Mapping as ORM;
     fields: ['livre'], 
     message: 'Désolé, ce livre est déjà réservé'
 )]
-#[ApiResource]
 class Reservation
 {
     #[ORM\Id]
@@ -35,8 +34,7 @@ private ?Livre $livre = null;
     #[Groups(['reservation:read', 'adherent:read'])]
     private ?Adherent $adherent = null;
 
-    #[ORM\Column(length: 50)]
-private string $statut = 'en_attente';
+
 
     public function getId(): ?int
     {
@@ -78,17 +76,6 @@ public function setLivre(?Livre $livre): static
 
         return $this;
     }
-
-    public function getStatut(): string
-{
-    return $this->statut;
-}
-
-public function setStatut(string $statut): static
-{
-    $this->statut = $statut;
-    return $this;
-}
 
 
 public function __toString(): string
