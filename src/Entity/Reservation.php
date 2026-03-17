@@ -2,7 +2,6 @@
 
 namespace App\Entity;
 
-use ApiPlatform\Metadata\ApiResource;
 use App\Repository\ReservationRepository;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\DBAL\Types\Types;

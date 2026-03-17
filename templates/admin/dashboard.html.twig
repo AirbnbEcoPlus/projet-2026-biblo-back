@@ -3,64 +3,144 @@
 {% block page_title %}Tableau de bord{% endblock %}
 
 {% block content_header %}
-    <h1 class="title">
-        <i class="fas fa-tachometer-alt"></i> Tableau de bord
-    </h1>
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3">
+        <div>
+            <h1 class="title mb-1">
+                <i class="fas fa-chart-line me-2"></i> Tableau de bord
+            </h1>
+            <p class="text-body-secondary mb-0">Vue rapide de l'activite de la bibliotheque.</p>
+        </div>
+        <span class="badge text-bg-secondary fs-6">{{ "now"|date('d/m/Y') }}</span>
+    </div>
 {% endblock %}
 
 {% block main %}
-    <div class="row">
-        <div class="col-lg-3 col-md-6">
-            <div class="card text-white bg-primary mb-3">
-                <div class="card-body text-center">
-                    <i class="fas fa-tags fa-3x mb-2"></i>
-                    <h2>{{ nbCategories }}</h2>
-                    <p class="card-text">Catégories</p>
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-body-secondary small">Livres</div>
+                            <div class="display-6 fw-semibold">{{ nbLivres }}</div>
+                        </div>
+                        <span class="badge text-bg-primary"><i class="fas fa-book"></i></span>
+                    </div>
+                    <div class="mt-2 small text-body-secondary">Disponibles: {{ nbLivresDisponibles }} | Indisponibles: {{ nbLivresIndisponibles }}</div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body text-center">
-                    <i class="fas fa-newspaper fa-3x mb-2"></i>
-                    <h2>{{ nbLivres }}</h2>
-                    <p class="card-text">Livres</p>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-body-secondary small">Emprunts en cours</div>
+                            <div class="display-6 fw-semibold">{{ nbEmpruntsEnCours }}</div>
+                        </div>
+                        <span class="badge text-bg-success"><i class="fas fa-arrow-right-arrow-left"></i></span>
+                    </div>
+                    <div class="mt-2 small text-body-secondary">Retards detectes: {{ nbEmpruntsRetard }}</div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card text-white bg-success mb-3">
-                <div class="card-body text-center">
-                    <i class="fas fa-newspaper fa-3x mb-2"></i>
-                    <h2>{{ nbReservations }}</h2>
-                    <p class="card-text">Réservations</p>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-body-secondary small">Adherents actifs</div>
+                            <div class="display-6 fw-semibold">{{ nbAdherentsActifs }}</div>
+                        </div>
+                        <span class="badge text-bg-info"><i class="fas fa-users"></i></span>
+                    </div>
+                    <div class="mt-3">
+                        <div class="d-flex justify-content-between small mb-1">
+                            <span>Taux d'activite</span>
+                            <span>{{ ratioAdherentsActifs }}%</span>
+                        </div>
+                        <div class="progress" role="progressbar" aria-label="Taux adherents actifs" aria-valuenow="{{ ratioAdherentsActifs }}" aria-valuemin="0" aria-valuemax="100">
+                            <div class="progress-bar" style="width: {{ ratioAdherentsActifs }}%"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="col-lg-3 col-md-6">
-            <div class="card text-white bg-warning mb-3">
-                <div class="card-body text-center">
-                    <i class="fas fa-users fa-3x mb-2"></i>
-                    <h2>{{ nbUtilisateurs }}</h2>
-                    <p class="card-text">Utilisateurs</p>
+        <div class="col-12 col-md-6 col-xl-3">
+            <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <div class="text-body-secondary small">Systeme</div>
+                            <div class="h4 fw-semibold mb-1">{{ nbUtilisateurs }} utilisateurs</div>
+                        </div>
+                        <span class="badge text-bg-warning"><i class="fas fa-gears"></i></span>
+                    </div>
+                    <div class="small text-body-secondary">{{ nbCategories }} categories | {{ nbReservations }} reservations</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="card">
+    <div class="row g-3">
+        <div class="col-12 col-xl-7">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header fw-semibold">Derniers emprunts</div>
+                <div class="table-responsive">
+                    <table class="table table-sm mb-0 align-middle">
+                        <thead>
+                            <tr>
+                                <th>Adherent</th>
+                                <th>Livre</th>
+                                <th>Date emprunt</th>
+                                <th>Retour prevu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for emprunt in recentEmprunts %}
+                                <tr>
+                                    <td>{{ emprunt.adherent ? emprunt.adherent.prenom ~ ' ' ~ emprunt.adherent.nom : 'N/A' }}</td>
+                                    <td>{{ emprunt.livre ? emprunt.livre.titre : 'N/A' }}</td>
+                                    <td>{{ emprunt.dateEmprunt ? emprunt.dateEmprunt|date('d/m/Y') : '-' }}</td>
+                                    <td>{{ emprunt.dateRetour ? emprunt.dateRetour|date('d/m/Y') : '-' }}</td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="4" class="text-center text-body-secondary py-4">Aucun emprunt pour le moment.</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-xl-5">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <span class="fw-semibold">Emprunts en retard</span>
+                    <span class="badge text-bg-danger">{{ nbEmpruntsRetard }}</span>
+                </div>
                 <div class="card-body">
-                    <h5 class="card-title">
-                        <i class="fas fa-info-circle"></i> Bienvenue
-                    </h5>
-                    <p class="card-text">
-                        Bienvenue sur le tableau de bord de l'application
-                        <strong>Bibliothèque</strong>.
-                        Utilisez le menu de gauche pour gérer les catégories,
-                        les livres et les utilisateurs.
-                    </p>
+                    {% if empruntsRetard is empty %}
+                        <div class="alert alert-success mb-0" role="alert">
+                            Aucun retard actuellement.
+                        </div>
+                    {% else %}
+                        <ul class="list-group list-group-flush">
+                            {% for emprunt in empruntsRetard %}
+                                {% set retard = date().diff(emprunt.dateRetour).days %}
+                                <li class="list-group-item px-0 d-flex justify-content-between align-items-start">
+                                    <div class="me-2">
+                                        <div class="fw-semibold">{{ emprunt.adherent ? emprunt.adherent.prenom ~ ' ' ~ emprunt.adherent.nom : 'N/A' }}</div>
+                                        <div class="small text-body-secondary">{{ emprunt.livre ? emprunt.livre.titre : 'N/A' }}</div>
+                                        <div class="small text-body-secondary">Retour prevu: {{ emprunt.dateRetour|date('d/m/Y') }}</div>
+                                    </div>
+                                    <span class="badge text-bg-danger">{{ retard }} j</span>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
                 </div>
             </div>
         </div>
