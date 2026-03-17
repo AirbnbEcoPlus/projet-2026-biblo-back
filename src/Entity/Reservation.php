@@ -31,7 +31,8 @@ class Reservation
 private ?Livre $livre = null;
 
     #[ORM\ManyToOne(inversedBy: 'reservations')]
-    #[Groups(['reservation:read', 'adherent:read'])]
+    #[ORM\JoinColumn(nullable: false)]
+    #[Groups(['reservation:read'])]
     private ?Adherent $adherent = null;
 
 
