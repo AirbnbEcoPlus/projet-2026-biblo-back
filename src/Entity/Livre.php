@@ -82,6 +82,7 @@ private Collection $reservations;
         $this->emprunts = new ArrayCollection();
         $this->auteurs = new ArrayCollection();
         $this->categories = new ArrayCollection();
+        $this->reservations = new ArrayCollection();
     
     }
 
@@ -227,6 +228,36 @@ public function removeReservation(Reservation $reservation): static
     }
     return $this;
 }
+
+    #[Groups(['livre:read'])]
+    public function isReserve(): bool
+    {
+        return !$this->reservations->isEmpty();
+    }
+
+    #[Groups(['livre:read'])]
+    public function isEmprunte(): bool
+    {
+        foreach ($this->emprunts as $emprunt) {
+            if ($emprunt->getDateRetourEffectue() === null) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    #[Groups(['livre:read'])]
+    public function getDateRetourPrevueEmprunt(): ?\DateTimeInterface
+    {
+        foreach ($this->emprunts as $emprunt) {
+            if ($emprunt->getDateRetourEffectue() === null) {
+                return $emprunt->getDateRetourPrevue();
+            }
+        }
+
+        return null;
+    }
 
     /**
      * @return Collection<int, Categorie>

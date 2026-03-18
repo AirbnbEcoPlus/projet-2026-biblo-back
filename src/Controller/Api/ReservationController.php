@@ -3,6 +3,7 @@
 namespace App\Controller\Api;
 
 use App\Entity\Reservation;
+use App\Entity\Utilisateur;
 use App\Repository\AdherentRepository;
 use App\Repository\ReservationRepository;
 use App\Repository\LivreRepository;
@@ -72,6 +73,12 @@ class ReservationController extends AbstractController
         if (!$adherent) {
             return $this->json(['error' => 'Aucun adhérent lié'], 400);
         }
+
+        $nbReservationsActives = $reservationRepo->count(['adherent' => $adherent]);
+        if ($nbReservationsActives >= 3) {
+            return $this->json(['error' => 'Maximum 3 réservations simultanées par adhérent'], 409);
+        }
+
         $data = json_decode($request->getContent(), true);
         $livre = $livreRepo->find($data['livre']);
 
