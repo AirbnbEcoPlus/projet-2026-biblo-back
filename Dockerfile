@@ -12,7 +12,7 @@ RUN composer install \
     --optimize-autoloader \
     --no-scripts
 
-FROM php:8.3-apache AS app
+FROM php:8.4-apache AS app
 
 ENV APP_ENV=prod \
     APACHE_DOCUMENT_ROOT=/var/www/html/public
@@ -28,6 +28,7 @@ RUN apt-get update \
         intl \
         opcache \
         pdo \
+        pdo_mysql \
         pdo_pgsql \
         zip \
     && a2enmod rewrite \
