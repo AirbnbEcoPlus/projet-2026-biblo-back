@@ -1,8 +1,11 @@
 // Initialiser quand le DOM est prêt
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🔍 Préparation du bouton Google Books...');
+    console.log('Préparation du bouton Google Books...');
     setTimeout(setupGoogleBooksButton, 500);
 });
+
+let lastGoogleBooksQueryAt = 0;
+const GOOGLE_BOOKS_MIN_INTERVAL_MS = 2500;
 
 // Detection pour les cas où le formulaire se racharge dynamiquement
 if (window.MutationObserver && document.body) {
@@ -13,7 +16,7 @@ if (window.MutationObserver && document.body) {
             const exists = document.querySelector('.google-books-button');
             const buttonContainer = findButtonContainer();
             if (!exists && buttonContainer) {
-                console.log('🔄 Réinitialisation du bouton après mutation du DOM');
+                console.log('Réinitialisation du bouton après mutation du DOM');
                 setupGoogleBooksButton();
             }
         }, 300);
@@ -31,11 +34,11 @@ function findButtonContainer() {
     // Cibler le formulaire EasyAdmin pour y insérer le bouton
     const formContainer = document.querySelector('.ea-new form, .ea-edit form, form');
     if (formContainer) {
-        console.log('✅ Formulaire trouvé');
+        console.log('Formulaire trouvé');
         return formContainer;
     }
 
-    console.log('❌ Emplacement du bouton non trouvé');
+    console.log('Emplacement du bouton non trouvé');
     return null;
 }
 
@@ -43,13 +46,13 @@ function setupGoogleBooksButton() {
     const buttonContainer = findButtonContainer();
     
     if (!buttonContainer) {
-        console.log('⏱️ Formulaire pas encore disponible, nouvelle tentative...');
+        console.log('Formulaire pas encore disponible, nouvelle tentative...');
         return;
     }
 
     // Vérifier si le bouton existe déjà
     if (buttonContainer.dataset.googleBooksSetup) {
-        console.log('✓ Bouton Google Books déjà initialisé');
+        console.log('Bouton Google Books deja initialise');
         return;
     }
     buttonContainer.dataset.googleBooksSetup = 'true';
@@ -74,10 +77,10 @@ function setupGoogleBooksButton() {
 
     if (titleWrapper && titleWrapper.parentElement) {
         titleWrapper.parentElement.insertBefore(wrapper, titleWrapper);
-        console.log('✅ Bouton Google Books ajouté juste avant le titre');
+        console.log('Bouton Google Books ajouté juste avant le titre');
     } else {
         buttonContainer.prepend(wrapper);
-        console.log('✅ Bouton Google Books ajouté au formulaire (fallback)');
+        console.log('Bouton Google Books ajouté au formulaire (fallback)');
     }
 
     // Événement au clic du bouton
@@ -141,7 +144,7 @@ function openGoogleBooksPopup() {
     document.head.appendChild(style);
     
     modalContent.innerHTML = `
-        <h2 style="margin: 0 0 20px 0; color: #333; font-size: 20px;">📚 Charger depuis Google Books</h2>
+        <h2 style="margin: 0 0 20px 0; color: #333; font-size: 20px;">Charger depuis Google Books</h2>
         <div>
             <label for="googleBooksIsbnInput" style="display: block; margin-bottom: 10px; font-weight: 600; color: #555; font-size: 14px;">
                 Entrez l'ISBN du livre:
@@ -149,7 +152,7 @@ function openGoogleBooksPopup() {
             <input 
                 type="text" 
                 id="googleBooksIsbnInput" 
-                placeholder="Ex: 978-2-07-036326-4"
+                placeholder="Ex: 207036822X"
                 autocomplete="off"
                 style="
                     width: 100%;
@@ -167,11 +170,11 @@ function openGoogleBooksPopup() {
                 onblur="this.style.borderColor='#e0e0e0'"
             />
             <div id="loadingMessage" style="display: none; color: #0066cc; margin-bottom: 15px; font-weight: 500; font-size: 14px;">
-                ⏳ Chargement en cours...
+                Chargement en cours...
             </div>
             <div id="errorMessage" style="display: none; color: #d32f2f; margin-bottom: 15px; padding: 12px; background-color: #ffebee; border-radius: 4px; border-left: 4px solid #d32f2f; font-size: 14px;"></div>
             <div id="successMessage" style="display: none; color: #388e3c; margin-bottom: 15px; padding: 12px; background-color: #f1f8e9; border-radius: 4px; border-left: 4px solid #388e3c; font-size: 14px;">
-                ✅ Données chargées avec succès!
+                Données chargées avec succès!
             </div>
         </div>
         <div style="display: flex; gap: 10px; justify-content: flex-end; margin-top: 20px;">
@@ -250,10 +253,19 @@ function searchAndLoadBook(modal) {
     successMessage.style.display = 'none';
     
     if (!isbn) {
-        errorMessage.innerText = '❌ Veuillez entrer un ISBN';
+        errorMessage.innerText = 'Veuillez entrer un ISBN';
         errorMessage.style.display = 'block';
         return;
     }
+
+    const now = Date.now();
+    if (now - lastGoogleBooksQueryAt < GOOGLE_BOOKS_MIN_INTERVAL_MS) {
+        const waitSeconds = Math.ceil((GOOGLE_BOOKS_MIN_INTERVAL_MS - (now - lastGoogleBooksQueryAt)) / 1000);
+        errorMessage.innerText = 'Merci d\'attendre ' + waitSeconds + 's avant une nouvelle recherche.';
+        errorMessage.style.display = 'block';
+        return;
+    }
+    lastGoogleBooksQueryAt = now;
     
     // Afficher le message de chargement
     loadingMessage.style.display = 'block';
@@ -261,7 +273,7 @@ function searchAndLoadBook(modal) {
     searchButton.style.opacity = '0.6';
     searchButton.style.cursor = 'not-allowed';
     
-    console.log('🔍 Recherche pour ISBN: ' + isbn);
+    console.log('Recherche pour ISBN: ' + isbn);
     
     // Envoyer la requête au serveur
     fetch('/admin/google-books/search', {
@@ -272,11 +284,13 @@ function searchAndLoadBook(modal) {
         },
         body: 'isbn=' + encodeURIComponent(isbn)
     })
-    .then(response => {
+    .then(async response => {
+        const payload = await response.json().catch(() => ({}));
         if (!response.ok) {
-            throw new Error('Erreur réseau: ' + response.status);
+            const serverMessage = payload && payload.error ? payload.error : ('Erreur réseau: ' + response.status);
+            throw new Error(serverMessage);
         }
-        return response.json();
+        return payload;
     })
     .then(data => {
         loadingMessage.style.display = 'none';
@@ -285,13 +299,13 @@ function searchAndLoadBook(modal) {
         searchButton.style.cursor = 'pointer';
         
         if (data.error) {
-            console.error('❌ Erreur API: ' + data.error);
-            errorMessage.innerText = '❌ ' + data.error;
+            console.error('Erreur API: ' + data.error);
+            errorMessage.innerText = '' + data.error;
             errorMessage.style.display = 'block';
             return;
         }
         
-        console.log('✅ Données reçues de Google Books');
+        console.log('Données reçues de Google Books');
         
         // Charger les données dans le formulaire
         loadDataToForm(data);
@@ -309,14 +323,14 @@ function searchAndLoadBook(modal) {
         searchButton.disabled = false;
         searchButton.style.opacity = '1';
         searchButton.style.cursor = 'pointer';
-        console.error('❌ Erreur: ' + error.message);
-        errorMessage.innerText = '❌ Erreur: ' + error.message;
+        console.error('Erreur: ' + error.message);
+        errorMessage.innerText = 'Erreur: ' + error.message;
         errorMessage.style.display = 'block';
     });
 }
 
 function loadDataToForm(data) {
-    console.log('📝 Chargement des données dans le formulaire...');
+    console.log('Chargement des données dans le formulaire...');
     
     // Charger le titre
     let titreFields = document.querySelectorAll('input[id*="titre"], input[name*="titre"]');
@@ -327,14 +341,14 @@ function loadDataToForm(data) {
             field.value = data.titre;
             field.dispatchEvent(new Event('input', { bubbles: true }));
             field.dispatchEvent(new Event('change', { bubbles: true }));
-            console.log('✅ Titre chargé: ' + data.titre);
+            console.log('Titre chargé: ' + data.titre);
             titreLoaded = true;
             break;
         }
     }
     
     if (!titreLoaded && data.titre) {
-        console.warn('⚠️ Champ titre non trouvé');
+        console.warn('Champ titre non trouvé');
     }
     
     // Charger la description
@@ -346,14 +360,14 @@ function loadDataToForm(data) {
             field.value = data.description;
             field.dispatchEvent(new Event('input', { bubbles: true }));
             field.dispatchEvent(new Event('change', { bubbles: true }));
-            console.log('✅ Description chargée: ' + data.description.substring(0, 50) + '...');
+            console.log('Description chargée: ' + data.description.substring(0, 50) + '...');
             descriptionLoaded = true;
             break;
         }
     }
     
     if (!descriptionLoaded && data.description) {
-        console.warn('⚠️ Champ description non trouvé');
+        console.warn('Champ description non trouvé');
     }
 
     // Charger la date de sortie
@@ -365,14 +379,14 @@ function loadDataToForm(data) {
             field.value = data.dateSortie;
             field.dispatchEvent(new Event('input', { bubbles: true }));
             field.dispatchEvent(new Event('change', { bubbles: true }));
-            console.log('✅ Date de sortie chargée: ' + data.dateSortie);
+            console.log('Date de sortie chargée: ' + data.dateSortie);
             dateLoaded = true;
             break;
         }
     }
 
     if (!dateLoaded && data.dateSortie) {
-        console.warn('⚠️ Champ date de sortie non trouvé');
+        console.warn('Champ date de sortie non trouvé');
     }
 }
 

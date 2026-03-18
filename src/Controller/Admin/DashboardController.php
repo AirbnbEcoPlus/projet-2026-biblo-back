@@ -3,6 +3,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Adherent;
+use App\Entity\AuditLog;
 use App\Entity\Auteur;
 use App\Entity\Categorie;
 use App\Entity\Emprunt;
@@ -163,6 +164,7 @@ class DashboardController extends AbstractDashboardController
         yield MenuItem::linkToCrud('Réservations', 'fas fa-bookmark', Reservation::class);
         yield MenuItem::linkToCrud('Livres', 'fas fa-book', Livre::class);
         yield MenuItem::linkToCrud('Utilisateurs', 'fas fa-user-shield', Utilisateur::class)->setPermission('ROLE_ADMIN');
+        yield MenuItem::linkToCrud('Historique actions', 'fas fa-clock-rotate-left', AuditLog::class)->setPermission('ROLE_ADMIN');
         
     }
 }

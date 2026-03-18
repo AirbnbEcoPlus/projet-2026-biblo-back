@@ -61,7 +61,7 @@ class LivreCrudController extends AbstractCrudController
 
     public function configureAssets(Assets $assets): Assets
     {
-        return $assets->addJsFile('js/google-books-loader.js');
+        return $assets->addJsFile('js/google-books-loader.js?v=20260319-2');
     }
 
 

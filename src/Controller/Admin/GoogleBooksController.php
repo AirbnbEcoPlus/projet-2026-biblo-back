@@ -14,6 +14,8 @@ class GoogleBooksController extends AbstractController
     public function searchGoogleBooks(Request $request): JsonResponse
     {
         $isbn = trim($request->request->get('isbn', ''));
+        $isbn = preg_replace('/[^0-9Xx]/', '', $isbn) ?? '';
+        $isbn = strtoupper($isbn);
 
         if (empty($isbn)) {
             return new JsonResponse(['error' => 'ISBN requis'], 400);
@@ -21,17 +23,40 @@ class GoogleBooksController extends AbstractController
 
         try {
             $url = sprintf('https://www.googleapis.com/books/v1/volumes?q=isbn:%s', urlencode($isbn));
+            $apiKey = (string) ($_ENV['GOOGLE_BOOKS_API_KEY'] ?? $_SERVER['GOOGLE_BOOKS_API_KEY'] ?? '');
+            if ($apiKey !== '') {
+                $url .= '&key=' . urlencode($apiKey);
+            }
             
             $context = stream_context_create([
                 'http' => [
                     'timeout' => 10,
+                    'ignore_errors' => true,
+                    'header' => "User-Agent: SAEIUT/1.0\r\n",
                 ]
             ]);
 
             $response = @file_get_contents($url, false, $context);
+
+            $statusCode = 0;
+            if (isset($http_response_header[0]) && preg_match('#HTTP/\S+\s+(\d{3})#', $http_response_header[0], $matches) === 1) {
+                $statusCode = (int) $matches[1];
+            }
             
-            if ($response === false) {
-                return new JsonResponse(['error' => 'Impossible de contacter Google Books'], 500);
+            if ($response === false || $statusCode >= 400) {
+                if ($statusCode === 429) {
+                    return new JsonResponse(['error' => 'Quota Google Books temporairement depasse. Reessayez dans quelques minutes.'], 429);
+                }
+
+                if ($statusCode >= 500) {
+                    return new JsonResponse(['error' => 'Service Google Books indisponible pour le moment.'], 503);
+                }
+
+                if ($statusCode >= 400) {
+                    return new JsonResponse(['error' => sprintf('Erreur Google Books (%d).', $statusCode)], 502);
+                }
+
+                return new JsonResponse(['error' => 'Impossible de contacter Google Books'], 503);
             }
 
             $data = json_decode($response, true);
