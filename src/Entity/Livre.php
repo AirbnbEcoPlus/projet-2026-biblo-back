@@ -15,7 +15,8 @@ use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LivreRepository::class)]
 #[ApiResource(
-    paginationItemsPerPage: 10
+    paginationItemsPerPage: 10,
+    normalizationContext: ['groups' => ['livre:read']]
 )]
 #[ApiFilter(SearchFilter::class, properties: [
     'titre' => 'partial', 
