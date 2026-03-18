@@ -15,6 +15,10 @@ RUN composer install \
 FROM php:8.4-apache AS app
 
 ENV APP_ENV=prod \
+    APP_DEBUG=0 \
+    APP_SECRET=change-me-in-prod \
+    DEFAULT_URI=http://localhost \
+    CORS_ALLOW_ORIGIN=^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$ \
     APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 RUN apt-get update \
@@ -42,7 +46,7 @@ COPY --from=vendor /app/vendor ./vendor
 COPY . .
 
 RUN mkdir -p var/cache var/log \
-    && if [ ! -f .env ]; then printf "APP_ENV=prod\nAPP_DEBUG=0\n" > .env; fi \
+    && if [ ! -f .env ]; then printf "APP_ENV=prod\nAPP_DEBUG=0\nAPP_SECRET=change-me-in-prod\nDEFAULT_URI=http://localhost\nCORS_ALLOW_ORIGIN='^https?://(localhost|127\\.0\\.0\\.1)(:[0-9]+)?$'\n" > .env; fi \
     && chown -R www-data:www-data var
 
 EXPOSE 80
