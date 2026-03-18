@@ -50,13 +50,16 @@ class Livre
     #[Groups(['livre:read', 'categorie:read', 'auteur:read'])]
     private ?string $photoCouverture = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    #[Groups(['livre:read', 'categorie:read', 'auteur:read'])]
+    private ?string $description = null;
+
     /**
      * @var Collection<int, Emprunt>
      */
     #[ORM\OneToMany(targetEntity: Emprunt::class, mappedBy: 'livre')]
     #[Groups(['livre:read'])]
     private Collection $emprunts;
-
     /**
      * @var Collection<int, Auteur>
      */
@@ -131,6 +134,18 @@ private Collection $reservations;
     public function setPhotoCouverture(?string $photoCouverture): static
     {
         $this->photoCouverture = $photoCouverture;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
 
         return $this;
     }
@@ -233,6 +248,23 @@ public function removeReservation(Reservation $reservation): static
     public function removeCategorie(Categorie $categorie): static
     {
         $this->categories->removeElement($categorie);
+
+        return $this;
+    }
+
+    /**
+     * Propriété virtuelle pour la recherche Google Books (non persistée)
+     */
+    private ?string $googleBooksIsbn = null;
+
+    public function getGoogleBooksIsbn(): ?string
+    {
+        return $this->googleBooksIsbn;
+    }
+
+    public function setGoogleBooksIsbn(?string $googleBooksIsbn): static
+    {
+        $this->googleBooksIsbn = $googleBooksIsbn;
 
         return $this;
     }

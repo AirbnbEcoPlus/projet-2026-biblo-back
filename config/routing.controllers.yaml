@@ -1,0 +1,4 @@
+# Routing configuration for controllers with #[Route] attributes
+controllers:
+    resource: ../src/Controller/
+    type: attribute
