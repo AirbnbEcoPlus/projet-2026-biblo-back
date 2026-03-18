@@ -36,6 +36,8 @@ class Adherent
     private ?\DateTime $dateNaiss = null;
 
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'L\'email est obligatoire.')]
+    #[Assert\Email(message: 'Veuillez saisir un email valide.')]
     #[Groups(['adherent:read'])]
     private ?string $email = null;
 

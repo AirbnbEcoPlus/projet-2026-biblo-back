@@ -44,7 +44,7 @@ class AdherentCrudController extends AbstractCrudController
             TextField::new('prenom'),
             DateField::new('dateNaiss', 'Date de naissance'),
             DateField::new('dateAdhesion', 'Date d\'adhésion'),
-            TextField::new('email')->hideOnIndex(),
+            TextField::new('email')->hideOnIndex()->setRequired(true),
             TextField::new('plainPassword', 'Mot de passe')
                 ->setFormType(PasswordType::class)
                 ->onlyWhenCreating(),

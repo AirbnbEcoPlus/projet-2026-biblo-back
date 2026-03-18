@@ -5,10 +5,12 @@ namespace App\Controller\Api;
 
 
 use App\Entity\Utilisateur;
+use App\Repository\UtilisateurRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 
@@ -37,8 +39,13 @@ class AdherentsController extends AbstractController
 
     }
 
-    #[Route('', name: 'api_adherents_me_update', methods: ['POST'])]
-    public function update(Request $request, EntityManagerInterface $em): JsonResponse {
+    #[Route('', name: 'api_adherents_me_update', methods: ['PATCH', 'POST'])]
+    public function update(
+        Request $request,
+        EntityManagerInterface $em,
+        UserPasswordHasherInterface $passwordHasher,
+        UtilisateurRepository $utilisateurRepository
+    ): JsonResponse {
 
 
         /** @var Utilisateur|null $user */
@@ -59,19 +66,49 @@ class AdherentsController extends AbstractController
             return $this->json(['message' => 'Invalid JSON body'], 400);
         }
 
-        $adherent->setNom(isset($data['nom']) ? trim((string) $data['nom']) : $adherent->getNom());
-        $adherent->setPrenom(isset($data['prenom']) ? trim((string) $data['prenom']) : $adherent->getPrenom());
-        $adherent->setEmail(isset($data['email']) ? trim((string) $data['email']) : $adherent->getEmail());
-        $adherent->setAdressePostale(isset($data['adressePostale']) ? trim((string) $data['adressePostale']) : $adherent->getAdressePostale());
-        $adherent->setNumTel(isset($data['numTel']) ? trim((string) $data['numTel']) : $adherent->getNumTel());
-        $adherent->setPhoto(isset($data['photo']) ? trim((string) $data['photo']) : $adherent->getPhoto());
-
-        if (isset($data['dateNaiss'])) {
-            $dateNaiss = \DateTime::createFromFormat('Y-m-d', (string) $data['dateNaiss']);
-            if (!$dateNaiss) {
-                return $this->json(['message' => 'dateNaiss format: YYYY-MM-DD'], 400);
+        $allowedFields = ['email', 'numTel', 'photo', 'password'];
+        foreach (array_keys($data) as $field) {
+            if (!in_array($field, $allowedFields, true)) {
+                return $this->json([
+                    'message' => sprintf('Field "%s" is not allowed. Allowed fields: email, numTel, photo, password', $field),
+                ], 400);
             }
-            $adherent->setDateNaiss($dateNaiss);
+        }
+
+        if (array_key_exists('email', $data)) {
+            $email = trim((string) $data['email']);
+            if ($email === '') {
+                return $this->json(['message' => 'Email is required'], 400);
+            }
+
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                return $this->json(['message' => 'Invalid email format'], 400);
+            }
+
+            $existing = $utilisateurRepository->findOneBy(['email' => $email]);
+            if ($existing !== null && $existing->getId() !== $user->getId()) {
+                return $this->json(['message' => 'Email already used'], 409);
+            }
+
+            $adherent->setEmail($email);
+            $user->setEmail($email);
+        }
+
+        if (array_key_exists('numTel', $data)) {
+            $adherent->setNumTel(trim((string) $data['numTel']));
+        }
+
+        if (array_key_exists('photo', $data)) {
+            $adherent->setPhoto(trim((string) $data['photo']));
+        }
+
+        if (array_key_exists('password', $data)) {
+            $password = (string) $data['password'];
+            if (strlen($password) < 4) {
+                return $this->json(['message' => 'Password must contain at least 4 characters'], 400);
+            }
+
+            $user->setPassword($passwordHasher->hashPassword($user, $password));
         }
 
         $em->flush();
