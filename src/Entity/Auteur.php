@@ -2,14 +2,20 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Metadata\GetCollection;
 use App\Repository\AuteurRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use ApiPlatform\Metadata\ApiResource;
 use Symfony\Component\Serializer\Attribute\Groups;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: AuteurRepository::class)]
+#[ApiResource(
+    paginationItemsPerPage: 10,
+    normalizationContext: ['groups' => ['auteur:read']]
+)]
 class Auteur
 {
     #[ORM\Id]
@@ -46,7 +52,7 @@ class Auteur
      * @var Collection<int, Livre>
      */
     #[ORM\ManyToMany(targetEntity: Livre::class, mappedBy: 'auteurs')]
-    #[Groups(['auteur:read'])]
+    #[Groups(['auteur:read', 'auteur:livres'])]
     private Collection $livres;
 
     public function __construct()
