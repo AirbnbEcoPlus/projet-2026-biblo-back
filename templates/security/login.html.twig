@@ -1,34 +1,209 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Log in!{% endblock %}
+{% block title %}Connexion | Bibliotheque{% endblock %}
+
+{% block stylesheets %}
+    <style>
+        :root {
+            --ea-bg: #0a0a0a;
+            --ea-page-bg: #262626;
+            --ea-surface: #404040;
+            --ea-border: #525252;
+            --ea-text: #d4d4d4;
+            --ea-muted: #fffefe;
+            --ea-primary: #1d4ed8;
+            --ea-primary-hover: #2563eb;
+            --ea-input-bg: #262626;
+            --ea-danger-bg: rgba(248, 81, 73, 0.12);
+            --ea-danger-border: #7f1d1d;
+            --ea-danger-text: #fca5a5;
+            --ea-success-bg: rgba(46, 160, 67, 0.15);
+            --ea-success-border: #166534;
+            --ea-success-text: #86efac;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            color: var(--ea-text);
+            background: var(--ea-bg);
+        }
+
+        .login-page {
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 1.25rem;
+            background: var(--ea-page-bg);
+        }
+
+        .login-card {
+            width: 100%;
+            max-width: 390px;
+            background: var(--ea-surface);
+            border: 1px solid var(--ea-border);
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3), 0 4px 6px -4px rgba(0, 0, 0, 0.3);
+        }
+
+        .login-card h1 {
+            margin: 0;
+            font-size: 1.35rem;
+            font-weight: 600;
+        }
+
+        .login-subtitle {
+            margin: 0.35rem 0 1.25rem;
+            color: var(--ea-muted);
+            font-size: 0.92rem;
+        }
+
+        .notice {
+            border-radius: 4px;
+            padding: 0.65rem 0.75rem;
+            margin-bottom: 1rem;
+            font-size: 0.88rem;
+            border: 1px solid transparent;
+        }
+
+        .notice.success {
+            background: var(--ea-success-bg);
+            border-color: var(--ea-success-border);
+            color: var(--ea-success-text);
+        }
+
+        .notice.error {
+            background: var(--ea-danger-bg);
+            border-color: var(--ea-danger-border);
+            color: var(--ea-danger-text);
+        }
+
+        .form-row {
+            margin-bottom: 0.95rem;
+        }
+
+        .form-row label {
+            display: block;
+            margin-bottom: 0.35rem;
+            font-size: 0.86rem;
+            font-weight: 600;
+            color: var(--ea-text);
+        }
+
+        .form-row input[type='email'],
+        .form-row input[type='password'] {
+            width: 100%;
+            border: 1px solid var(--ea-border);
+            border-radius: 4px;
+            padding: 0.62rem 0.72rem;
+            font: inherit;
+            font-size: 0.92rem;
+            color: var(--ea-text);
+            background: var(--ea-input-bg);
+            transition: border-color 120ms ease, box-shadow 120ms ease;
+        }
+
+        .form-row input:focus {
+            outline: none;
+            border-color: #a3a3a3;
+            box-shadow: none;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin: 0.2rem 0 1.1rem;
+            color: var(--ea-muted);
+            font-size: 0.88rem;
+        }
+
+        .remember input {
+            width: 1rem;
+            height: 1rem;
+            accent-color: var(--ea-primary);
+        }
+
+        .login-submit {
+            width: 100%;
+            border: 0;
+            border-radius: 4px;
+            padding: 0.7rem 0.9rem;
+            color: #fff;
+            background: var(--ea-primary);
+            font: inherit;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 120ms ease;
+        }
+
+        .login-submit:hover {
+            background: var(--ea-primary-hover);
+        }
+
+        .logout-link {
+            color: #93c5fd;
+            font-weight: 600;
+        }
+    </style>
+{% endblock %}
 
 {% block body %}
-<form method="post">
-    {% if error %}
-        <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
-    {% endif %}
+<div class="login-page">
+    <form class="login-card" method="post">
+        <h1>Connexion</h1>
+        <p class="login-subtitle">Accede a ton espace de gestion.</p>
 
-    {% if app.user %}
-        <div class="mb-3">
-            You are logged in as {{ app.user.userIdentifier }}, <a href="{{ logout_path() }}">Logout</a>
+        {% if error %}
+            <div class="notice error">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+        {% endif %}
+
+        {% if app.user %}
+            <div class="notice success">
+                Tu es connecte en tant que {{ app.user.userIdentifier }},
+                <a class="logout-link" href="{{ logout_path() }}">se deconnecter</a>.
+            </div>
+        {% endif %}
+
+        <div class="form-row">
+            <label for="inputEmail">Email</label>
+            <input
+                type="email"
+                value="{{ last_username }}"
+                name="email"
+                id="inputEmail"
+                autocomplete="email"
+                required
+                autofocus
+            >
         </div>
-    {% endif %}
 
-    <h1 class="h3 mb-3 font-weight-normal">Please sign in</h1>
-    <label for="inputEmail">Email</label>
-    <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="form-control" autocomplete="email" required autofocus>
-    <label for="inputPassword">Password</label>
-    <input type="password" name="password" id="inputPassword" class="form-control" autocomplete="current-password" required>
-    <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+        <div class="form-row">
+            <label for="inputPassword">Mot de passe</label>
+            <input
+                type="password"
+                name="password"
+                id="inputPassword"
+                autocomplete="current-password"
+                required
+            >
+        </div>
 
-    <div class="checkbox mb-3">
-        <label>
-            <input type="checkbox" name="_remember_me"> Remember me
+        <input type="hidden" name="_csrf_token" data-controller="csrf-protection" value="{{ csrf_token('authenticate') }}">
+
+        <label class="remember" for="rememberMe">
+            <input type="checkbox" name="_remember_me" id="rememberMe">
+            Se souvenir de moi
         </label>
-    </div>
 
-    <button class="btn btn-lg btn-primary" type="submit">
-        Sign in
-    </button>
-</form>
+        <button class="login-submit" type="submit">
+            Se connecter
+        </button>
+    </form>
+</div>
 {% endblock %}
