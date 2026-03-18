@@ -47,7 +47,7 @@ class Livre
     private ?string $langue = null;
 
     #[ORM\Column(length: 255, nullable: true)]
-    #[Groups(['livre:read', 'categorie:read', 'auteur:read'])]
+    #[Groups(['livre:read', 'categorie:read', 'auteur:read', 'adherent:read'])]
     private ?string $photoCouverture = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

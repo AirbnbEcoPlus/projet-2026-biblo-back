@@ -17,44 +17,6 @@ use Symfony\Component\Routing\Attribute\Route;
 #[Route('/api/reservations')]
 class ReservationController extends AbstractController
 {
-    #[Route('', name: 'api_reservations', methods: ['GET'])]
-    public function index(ReservationRepository $reservationRepository): JsonResponse
-    {
-    
-         /** @var \App\Entity\Utilisateur $user */
-        $user = $this->getUser();
-
-        if (!$user) {
-            return $this->json(['error' => 'Non authentifié'], 401);
-        }
-
-        if (!$user->getAdherent()) {
-            return $this->json(['error' => 'Aucun adhérent lié'], 400);
-        }
-        
-        if ($this->isGranted('ROLE_ADMIN')) {
-            $reservations = $reservationRepository->findAll();
-        } else {
-            $reservations = $reservationRepository->findBy([
-                'adherent' => $user->getAdherent()
-            ]);
-        }
-
-        return $this->json($reservations, 200, [], ['groups' => 'reservation:read']);
-    }
-
-    #[Route('/{id}', name: 'api_reservations_show', methods: ['GET'])]
-    public function show(Reservation $reservation): JsonResponse
-{
-        /** @var Utilisateur $user */
-        $user = $this->getUser();
-
-        if (!$user || $reservation->getAdherent() !== $user->getAdherent()) {
-            return $this->json(['error' => 'Accès refusé'], 403);
-        }
-
-        return $this->json($reservation, 200, [], ['groups' => 'reservation:read']);
-}
 
     #[Route('', name: 'api_reservation_create', methods: ['POST'])]
     public function create(Request $request, EntityManagerInterface $em, AdherentRepository $adherentRepo, LivreRepository $livreRepo, ReservationRepository $reservationRepo): JsonResponse {
