@@ -5,11 +5,13 @@ namespace App\Controller\Admin;
 use App\Entity\Utilisateur;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
 use EasyCorp\Bundle\EasyAdminBundle\Field\ChoiceField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class UtilisateurCrudController extends AbstractCrudController
 {
@@ -32,7 +34,15 @@ class UtilisateurCrudController extends AbstractCrudController
             TextField::new('email'),
             TextField::new('nom'),
             TextField::new('prenom', 'Prénom'),
-            TextField::new('password', 'Mot de passe')->onlyOnForms(),
+            TextField::new('plainPassword', 'Mot de passe')
+                ->setFormType(PasswordType::class)
+                ->setRequired($pageName === Crud::PAGE_NEW)
+                ->setFormTypeOptions([
+                    'always_empty' => true,
+                    'empty_data' => '',
+                    'attr' => ['autocomplete' => 'new-password'],
+                ])
+                ->onlyOnForms(),
             ChoiceField::new('roles')
                 ->setChoices([
                     'Utilisateur' => 'ROLE_USER',
@@ -47,9 +57,15 @@ class UtilisateurCrudController extends AbstractCrudController
     public function persistEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Utilisateur) {
+            $plainPassword = trim((string) $entityInstance->getPlainPassword());
+            if ($plainPassword === '') {
+                throw new \RuntimeException('Le mot de passe est obligatoire a la creation.');
+            }
+
             $entityInstance->setPassword(
-                $this->passwordHasher->hashPassword($entityInstance, $entityInstance->getPassword())
+                $this->passwordHasher->hashPassword($entityInstance, $plainPassword)
             );
+            $entityInstance->setPlainPassword(null);
         }
         parent::persistEntity($entityManager, $entityInstance);
     }
@@ -57,9 +73,14 @@ class UtilisateurCrudController extends AbstractCrudController
     public function updateEntity(EntityManagerInterface $entityManager, $entityInstance): void
     {
         if ($entityInstance instanceof Utilisateur) {
-            $entityInstance->setPassword(
-                $this->passwordHasher->hashPassword($entityInstance, $entityInstance->getPassword())
-            );
+            $plainPassword = trim((string) $entityInstance->getPlainPassword());
+            if ($plainPassword !== '') {
+                $entityInstance->setPassword(
+                    $this->passwordHasher->hashPassword($entityInstance, $plainPassword)
+                );
+            }
+
+            $entityInstance->setPlainPassword(null);
         }
         parent::updateEntity($entityManager, $entityInstance);
     }

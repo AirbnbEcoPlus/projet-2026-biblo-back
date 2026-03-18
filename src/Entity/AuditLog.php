@@ -131,4 +131,13 @@ class AuditLog
 
         return mb_strlen($json) > 140 ? mb_substr($json, 0, 140) . '...' : $json;
     }
+
+    public function getDataAsJson(): string
+    {
+        if ($this->data === null || $this->data === []) {
+            return '';
+        }
+
+        return json_encode($this->data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '';
+    }
 }

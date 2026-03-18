@@ -45,14 +45,8 @@ class AuditLogCrudController extends AbstractCrudController
         yield TextField::new('entityId', 'ID entité');
         yield TextField::new('userEmail', 'Utilisateur')->setSortable(false);
         yield TextField::new('dataSummary', 'Résumé')->onlyOnIndex()->setSortable(false);
-        yield TextareaField::new('data', 'Données')
+        yield TextareaField::new('dataAsJson', 'Données')
             ->onlyOnDetail()
-            ->formatValue(static function ($value): string {
-                if (!is_array($value)) {
-                    return '';
-                }
-
-                return json_encode($value, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE) ?: '';
-            });
+            ->setSortable(false);
     }
 }
