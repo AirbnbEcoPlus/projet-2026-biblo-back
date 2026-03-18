@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20260318214806 extends AbstractMigration
+final class Version20260318234252 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -21,6 +21,7 @@ final class Version20260318214806 extends AbstractMigration
     {
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE adherent (id INT AUTO_INCREMENT NOT NULL, date_adhesion DATE NOT NULL, nom VARCHAR(255) NOT NULL, prenom VARCHAR(255) NOT NULL, date_naiss DATE NOT NULL, email VARCHAR(255) DEFAULT NULL, adresse_postale VARCHAR(255) DEFAULT NULL, num_tel VARCHAR(255) DEFAULT NULL, photo VARCHAR(255) DEFAULT NULL, est_actif TINYINT NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
+        $this->addSql('CREATE TABLE audit_log (id INT AUTO_INCREMENT NOT NULL, entity_class VARCHAR(255) NOT NULL, entity_id VARCHAR(64) DEFAULT NULL, action VARCHAR(20) NOT NULL, user_email VARCHAR(180) DEFAULT NULL, data JSON DEFAULT NULL, created_at DATETIME NOT NULL, INDEX idx_audit_entity_class (entity_class), INDEX idx_audit_action (action), INDEX idx_audit_created_at (created_at), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE auteur (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(255) NOT NULL, prenom VARCHAR(255) NOT NULL, date_naissance DATE DEFAULT NULL, date_deces VARCHAR(255) DEFAULT NULL, nationalite VARCHAR(255) DEFAULT NULL, photo VARCHAR(255) DEFAULT NULL, description VARCHAR(255) DEFAULT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE categorie (id INT AUTO_INCREMENT NOT NULL, nom VARCHAR(255) NOT NULL, description VARCHAR(255) NOT NULL, PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
         $this->addSql('CREATE TABLE emprunt (id INT AUTO_INCREMENT NOT NULL, date_emprunt DATE NOT NULL, date_retour_effectue DATE DEFAULT NULL, date_retour_prevue DATE NOT NULL, adherent_id INT DEFAULT NULL, livre_id INT DEFAULT NULL, INDEX IDX_364071D725F06C53 (adherent_id), INDEX IDX_364071D737D925CB (livre_id), PRIMARY KEY (id)) DEFAULT CHARACTER SET utf8mb4');
@@ -53,6 +54,7 @@ final class Version20260318214806 extends AbstractMigration
         $this->addSql('ALTER TABLE reservation DROP FOREIGN KEY FK_42C8495525F06C53');
         $this->addSql('ALTER TABLE utilisateur DROP FOREIGN KEY FK_1D1C63B325F06C53');
         $this->addSql('DROP TABLE adherent');
+        $this->addSql('DROP TABLE audit_log');
         $this->addSql('DROP TABLE auteur');
         $this->addSql('DROP TABLE categorie');
         $this->addSql('DROP TABLE emprunt');
