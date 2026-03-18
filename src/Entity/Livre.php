@@ -8,11 +8,15 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LivreRepository::class)]
+#[ApiResource(
+    paginationItemsPerPage: 10
+)]
 #[ApiFilter(SearchFilter::class, properties: [
     'titre' => 'partial', 
     'langue' => 'exact', 
