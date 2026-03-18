@@ -99,4 +99,27 @@ class ReservationController extends AbstractController
         return $this->json($reservation, 201, [], ['groups' => 'reservation:read']);
 }
 
+    #[Route('/{id}', name: 'api_reservation_delete', methods: ['DELETE'])]
+    public function delete(Reservation $reservation, EntityManagerInterface $em): JsonResponse
+    {
+        /** @var Utilisateur|null $user */
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->json(['error' => 'Non authentifié'], 401);
+        }
+
+        $canDelete = $this->isGranted('ROLE_ADMIN')
+            || ($user->getAdherent() !== null && $reservation->getAdherent() === $user->getAdherent());
+
+        if (!$canDelete) {
+            return $this->json(['error' => 'Accès refusé'], 403);
+        }
+
+        $em->remove($reservation);
+        $em->flush();
+
+        return new JsonResponse(null, 204);
+    }
+
 }
