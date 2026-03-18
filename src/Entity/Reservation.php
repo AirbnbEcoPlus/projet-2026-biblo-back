@@ -35,6 +35,9 @@ private ?Livre $livre = null;
     #[Groups(['reservation:read'])]
     private ?Adherent $adherent = null;
 
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $dateNotification = null;
+
 
 
     public function getId(): ?int
@@ -75,6 +78,16 @@ public function setLivre(?Livre $livre): static
     {
         $this->adherent = $adherent;
 
+        return $this;
+    }
+    public function getDateNotification(): ?\DateTimeInterface
+    {
+        return $this->dateNotification;
+    }
+
+    public function setDateNotification(?\DateTimeInterface $dateNotification): self
+    {
+        $this->dateNotification = $dateNotification;
         return $this;
     }
 

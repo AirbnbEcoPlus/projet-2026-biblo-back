@@ -5,7 +5,9 @@ namespace App\Controller\Admin;
 use App\Entity\Adherent;
 use App\Entity\Emprunt;
 use App\Entity\Livre;
+use App\Entity\Reservation;
 use App\Repository\LivreRepository;
+use App\Repository\ReservationRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
@@ -46,7 +48,18 @@ class EmpruntCrudController extends AbstractCrudController
                     ->setLabel('Nouvel emprunt')
                     ->linkToRoute('admin_emprunt_manual_new')
                     ->setCssClass('btn btn-primary');
-            });
+            })
+            ->add(Crud::PAGE_INDEX, Action::new('retour', 'Retourner')
+            ->linkToRoute('admin_emprunt_retour', function (Emprunt $emprunt) {
+            return ['id' => $emprunt->getId()];
+            })
+            ->setIcon('fa fa-undo')
+            ->setCssClass('text-white btn-success')
+            ->displayIf(function (Emprunt $emprunt) {
+                return $emprunt->getDateRetourEffectue() === null;
+            })
+        );
+            
     }
 
     public function configureFields(string $pageName): iterable
@@ -54,7 +67,8 @@ class EmpruntCrudController extends AbstractCrudController
         return [
             IdField::new('id')->hideOnForm(),
             DateField::new('dateEmprunt', 'Date d\'emprunt')->hideOnForm(),
-            DateField::new('dateRetour', 'Date de retour'),
+            DateField::new('dateRetourPrevue', 'Date de retour'),
+            DateField::new('dateRetourEffectue', 'Date de retour effectué')->hideWhenCreating(),
             AssociationField::new('adherent', 'Adhérent')
                 ->formatValue(static function ($value, ?Emprunt $emprunt): string {
                     if (!$emprunt || !$emprunt->getAdherent()) {
@@ -82,8 +96,7 @@ class EmpruntCrudController extends AbstractCrudController
         EntityManagerInterface $entityManager,
         AdminUrlGenerator $adminUrlGenerator
     ): Response {
-        $today = new \DateTimeImmutable('today');
-        $activeLoansByAdherent = $this->getActiveLoanCountsByAdherent($entityManager, $today);
+        $activeLoansByAdherent = $this->getActiveLoanCountsByAdherent($entityManager);
 
         $form = $this->createFormBuilder()
             ->add('adherent', EntityType::class, [
@@ -111,11 +124,10 @@ class EmpruntCrudController extends AbstractCrudController
                 'multiple' => true,
                 'expanded' => false,
                 'choice_label' => 'titre',
-                'query_builder' => static function (LivreRepository $repository) use ($today) {
+                'query_builder' => static function (LivreRepository $repository) {
                     return $repository->createQueryBuilder('l')
-                        ->leftJoin('l.emprunts', 'e', 'WITH', 'e.dateRetour >= :today')
+                        ->leftJoin('l.emprunts', 'e', 'WITH', 'e.dateRetourEffectue IS NULL')
                         ->andWhere('e.id IS NULL')
-                        ->setParameter('today', $today)
                         ->orderBy('l.titre', 'ASC');
                 },
                 'choice_attr' => static function (Livre $livre): array {
@@ -132,7 +144,7 @@ class EmpruntCrudController extends AbstractCrudController
                 },
                 'help' => 'Seuls les livres disponibles sont affichés.',
             ])
-            ->add('dateRetour', DateType::class, [
+            ->add('dateRetourPrevue', DateType::class, [
                 'label' => 'Date de retour prévue',
                 'widget' => 'single_text',
                 'html5' => true,
@@ -147,10 +159,12 @@ class EmpruntCrudController extends AbstractCrudController
             $adherent = $form->get('adherent')->getData();
             /** @var iterable<Livre> $livres */
             $livres = $form->get('livres')->getData();
-            /** @var \DateTimeInterface $dateRetour */
-            $dateRetour = $form->get('dateRetour')->getData();
+            /** @var \DateTimeInterface $dateRetourPrevue */
+            $dateRetourPrevue = $form->get('dateRetourPrevue')->getData();
+            
 
             $livresArray = is_array($livres) ? $livres : iterator_to_array($livres);
+            $livresArray = array_unique($livresArray, SORT_REGULAR);
 
             if (count($livresArray) === 0) {
                 $this->addFlash('danger', 'Sélectionne au moins un livre.');
@@ -159,14 +173,21 @@ class EmpruntCrudController extends AbstractCrudController
                     'form' => $form,
                 ]);
             }
+            
+
+            if (!$adherent->isEstActif()) {
+                $this->addFlash('danger', 'Cet adhérent est suspendu. Emprunt impossible.');
+                return $this->render('admin/emprunt_manual_new.html.twig', [
+                'form' => $form,
+            ]);
+            }
 
             $activeLoans = (int) $entityManager->createQueryBuilder()
                 ->select('COUNT(e.id)')
                 ->from(Emprunt::class, 'e')
                 ->where('e.adherent = :adherent')
-                ->andWhere('e.dateRetour >= :today')
+                ->andWhere('e.dateRetourEffectue IS NULL')
                 ->setParameter('adherent', $adherent)
-                ->setParameter('today', $today)
                 ->getQuery()
                 ->getSingleScalarResult();
 
@@ -183,9 +204,8 @@ class EmpruntCrudController extends AbstractCrudController
                 ->from(Livre::class, 'l')
                 ->join('l.emprunts', 'e')
                 ->where('l IN (:selectedBooks)')
-                ->andWhere('e.dateRetour >= :today')
+                ->andWhere('e.dateRetourEffectue IS NULL')
                 ->setParameter('selectedBooks', $livresArray)
-                ->setParameter('today', $today)
                 ->getQuery()
                 ->getResult();
 
@@ -207,7 +227,7 @@ class EmpruntCrudController extends AbstractCrudController
                 $emprunt->setAdherent($adherent);
                 $emprunt->setLivre($livre);
                 $emprunt->setDateEmprunt(new \DateTime());
-                $emprunt->setDateRetour(\DateTime::createFromInterface($dateRetour));
+                $emprunt->setDateRetourPrevue(\DateTime::createFromInterface($dateRetourPrevue));
                 $entityManager->persist($emprunt);
             }
 
@@ -228,13 +248,12 @@ class EmpruntCrudController extends AbstractCrudController
         ]);
     }
 
-    private function getActiveLoanCountsByAdherent(EntityManagerInterface $entityManager, \DateTimeImmutable $today): array
+    private function getActiveLoanCountsByAdherent(EntityManagerInterface $entityManager): array
     {
         $rows = $entityManager->createQueryBuilder()
             ->select('IDENTITY(e.adherent) AS adherentId, COUNT(e.id) AS activeCount')
             ->from(Emprunt::class, 'e')
-            ->where('e.dateRetour >= :today')
-            ->setParameter('today', $today)
+            ->andWhere('e.dateRetourEffectue IS NULL')
             ->groupBy('e.adherent')
             ->getQuery()
             ->getArrayResult();
@@ -246,4 +265,39 @@ class EmpruntCrudController extends AbstractCrudController
 
         return $counts;
     }
+
+    #[Route('/admin/emprunts/{id}/retour', name: 'admin_emprunt_retour')]
+    public function RetourLivreEmprunt(Emprunt $emprunt, EntityManagerInterface $entityManager, ReservationRepository $reservationRepository): Response
+    {
+            if ($emprunt->getDateRetourEffectue()) {
+                $this->addFlash('warning', 'Ce livre a déjà été retourné.');
+                return $this->redirectToRoute('admin_emprunt_index');
+            }
+            $emprunt->setDateRetourEffectue(new \DateTime());
+            $entityManager->flush();
+
+            $reservation = $reservationRepository->createQueryBuilder('r')
+                ->where('r.livre = :livre')
+                ->andWhere('r.dateNotification IS NULL')
+                ->orderBy('r.dateResa', 'ASC')
+                ->setMaxResults(1)
+                ->setParameter('livre', $emprunt->getLivre())
+                ->getQuery()
+                ->getOneOrNullResult();
+            if ($reservation) {
+                $reservation->setDateNotification(new \DateTime());
+                $entityManager->flush();
+
+                $this->addFlash('warning', sprintf(
+                    'Livre retourné. ATTENTION : Ce livre est réservé par %s %s.',
+                    $reservation->getAdherent()->getPrenom(),
+                    $reservation->getAdherent()->getNom()
+                ));
+            } else {
+                $this->addFlash('success', 'Livre retourné avec succès et remis en rayon.');
+            }
+
+        return $this->redirectToRoute('admin_emprunt_index');
+    }
 }
+

@@ -11,6 +11,9 @@ use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
 
 class AdherentCrudController extends AbstractCrudController
 {
@@ -24,6 +27,14 @@ class AdherentCrudController extends AbstractCrudController
         return Adherent::class;
     }
 
+    public function configureActions(Actions $actions): Actions
+    {
+        
+        return $actions
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+            ->setPermission(Action::EDIT, 'ROLE_BIBLIO')
+            ->setPermission(Action::NEW, 'ROLE_BIBLIO');
+    }
     public function configureFields(string $pageName): iterable
     {
         return [
@@ -36,6 +47,7 @@ class AdherentCrudController extends AbstractCrudController
             TextField::new('adressePostale', 'Adresse postale')->hideOnIndex(),
             TextField::new('numTel', 'Téléphone')->hideOnIndex(),
             UrlField::new('photo')->hideOnIndex(),
+            BooleanField::new('estActif', 'Actif')
         ];
     }
 
