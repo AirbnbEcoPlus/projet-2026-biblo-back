@@ -11,6 +11,7 @@ use ApiPlatform\Metadata\ApiFilter;
 use ApiPlatform\Metadata\ApiResource;
 use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
 use ApiPlatform\Doctrine\Orm\Filter\DateFilter;
+use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Serializer\Attribute\Groups;
 
 #[ORM\Entity(repositoryClass: LivreRepository::class)]
@@ -288,6 +289,8 @@ public function removeReservation(Reservation $reservation): static
      */
     private ?string $googleBooksIsbn = null;
 
+    private ?UploadedFile $photoFile = null;
+
     public function getGoogleBooksIsbn(): ?string
     {
         return $this->googleBooksIsbn;
@@ -296,6 +299,18 @@ public function removeReservation(Reservation $reservation): static
     public function setGoogleBooksIsbn(?string $googleBooksIsbn): static
     {
         $this->googleBooksIsbn = $googleBooksIsbn;
+
+        return $this;
+    }
+
+    public function getPhotoFile(): ?UploadedFile
+    {
+        return $this->photoFile;
+    }
+
+    public function setPhotoFile(?UploadedFile $photoFile): static
+    {
+        $this->photoFile = $photoFile;
 
         return $this;
     }
