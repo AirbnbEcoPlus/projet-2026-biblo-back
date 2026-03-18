@@ -42,6 +42,7 @@ COPY --from=vendor /app/vendor ./vendor
 COPY . .
 
 RUN mkdir -p var/cache var/log \
+    && if [ ! -f .env ]; then printf "APP_ENV=prod\nAPP_DEBUG=0\n" > .env; fi \
     && chown -R www-data:www-data var
 
 EXPOSE 80
