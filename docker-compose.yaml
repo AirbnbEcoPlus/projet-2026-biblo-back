@@ -1,0 +1,43 @@
+services:
+  database:
+    image: mariadb:11
+    container_name: biblio_database
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: bibliotheque
+      MYSQL_USER: app
+      MYSQL_PASSWORD: app
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    image: ghcr.io/airbnbecoplus/projet-2026-biblo-back:latest
+    container_name: biblio_backend
+    restart: always
+    depends_on:
+      - database
+    environment:
+      APP_ENV: prod
+      APP_DEBUG: 0
+      APP_SECRET: change-me-in-prod
+      DEFAULT_URI: http://10.0.100.172:8000
+      CORS_ALLOW_ORIGIN: ^https?://(localhost|127\.0\.0\.1|10\.[0-9]+\.[0-9]+\.[0-9]+|192\.168\.[0-9]+\.[0-9]+)(:[0-9]+)?$
+      DATABASE_URL: mysql://app:app@database:3306/bibliotheque?serverVersion=mariadb-11.0.0&charset=utf8mb4
+      JWT_SECRET_KEY: /var/www/html/config/jwt/private.pem
+      JWT_PUBLIC_KEY: /var/www/html/config/jwt/public.pem
+      JWT_PASSPHRASE: 1234
+    ports:
+      - "8000:80"
+
+  frontend:
+    image: ghcr.io/airbnbecoplus/projet-2026-biblo-front:latest
+    container_name: biblio_frontend
+    restart: always
+    depends_on:
+      - backend
+    ports:
+      - "80:80"
+
+volumes:
+  db_data:

@@ -3,13 +3,24 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Livre;
+<<<<<<< HEAD
 use App\Entity\Emprunt;
+=======
+use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+>>>>>>> 5de1c725468bec91864129c88336931b17267d6c
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
+<<<<<<< HEAD
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+=======
+use EasyCorp\Bundle\EasyAdminBundle\Field\LanguageField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+>>>>>>> 5de1c725468bec91864129c88336931b17267d6c
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\LanguageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
@@ -21,6 +32,7 @@ class LivreCrudController extends AbstractCrudController
         return Livre::class;
     }
 
+<<<<<<< HEAD
     public function configureActions(Actions $actions): Actions
     {
         
@@ -31,18 +43,38 @@ class LivreCrudController extends AbstractCrudController
     }
 
     
+=======
+    public function configureCrud(Crud $crud): Crud
+    {
+        return $crud
+            ->setEntityLabelInPlural('Livres')
+            ->setEntityLabelInSingular('Livre')
+            ->setPageTitle(Crud::PAGE_INDEX, 'Gestion des livres')
+            ->setPageTitle(Crud::PAGE_NEW, 'Ajouter un nouveau livre')
+            ->setPageTitle(Crud::PAGE_EDIT, 'Modifier le livre')
+            ->overrideTemplate('crud/new', 'admin/livre_crud/new.html.twig')
+            ->overrideTemplate('crud/edit', 'admin/livre_crud/edit.html.twig');
+    }
+
+    public function configureAssets(Assets $assets): Assets
+    {
+        return $assets->addJsFile('js/google-books-loader.js');
+    }
+
+>>>>>>> 5de1c725468bec91864129c88336931b17267d6c
     public function configureFields(string $pageName): iterable
     {
         return [
             IdField::new('id')->hideOnForm(),
+            FormField::addPanel('Informations du livre'),
             TextField::new('titre'),
+
             AssociationField::new('auteurs'),
             AssociationField::new('categories', 'Catégories'),
             DateField::new('dateSortie', 'Date de sortie'),
             LanguageField::new('langue'),
+            TextareaField::new('description')->hideOnIndex(),
             UrlField::new('photoCouverture', 'Photo de la couverture'),
-
         ];
     }
-    
 }

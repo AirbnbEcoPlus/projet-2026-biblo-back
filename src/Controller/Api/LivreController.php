@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 #[Route('/api/livres')]
 class LivreController extends AbstractController
 {
-    #[Route('/', name: 'api_livres', methods: ['GET'])]
+    #[Route('', name: 'api_livres', methods: ['GET'])]
     public function index(LivreRepository $livreRepository, Request $request): JsonResponse
     {
         $criteres = [
