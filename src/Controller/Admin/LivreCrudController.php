@@ -3,16 +3,22 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Livre;
+use App\Entity\Emprunt;
+
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
+
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\LanguageField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
+use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
+
+
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
+use EasyCorp\Bundle\EasyAdminBundle\Field\LanguageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
 
 class LivreCrudController extends AbstractCrudController
@@ -22,6 +28,16 @@ class LivreCrudController extends AbstractCrudController
         return Livre::class;
     }
 
+    public function configureActions(Actions $actions): Actions
+    {
+        
+        return $actions
+            ->setPermission(Action::DELETE, 'ROLE_ADMIN')
+            ->setPermission(Action::EDIT, 'ROLE_ADMIN')
+            ->setPermission(Action::NEW, 'ROLE_ADMIN');
+    }
+
+    
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -38,6 +54,7 @@ class LivreCrudController extends AbstractCrudController
     {
         return $assets->addJsFile('js/google-books-loader.js');
     }
+
 
     public function configureFields(string $pageName): iterable
     {

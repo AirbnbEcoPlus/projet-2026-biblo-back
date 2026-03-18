@@ -16,13 +16,18 @@ class Emprunt
     #[Groups(['emprunt:read', 'adherent:read'])]
     private ?int $id = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: false)]
     #[Groups(['emprunt:read', 'adherent:read'])]
     private ?\DateTime $dateEmprunt = null;
 
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Groups(['emprunt:read', 'adherent:read'])]
+    private ?\DateTime $dateRetourEffectue = null;
+
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Groups(['emprunt:read', 'adherent:read'])]
-    private ?\DateTime $dateRetour = null;
+    private ?\DateTime $dateRetourPrevue = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'emprunts')]
     private ?Adherent $adherent = null;
@@ -48,17 +53,28 @@ class Emprunt
         return $this;
     }
 
-    public function getDateRetour(): ?\DateTime
+    public function getDateRetourPrevue(): ?\DateTime
     {
-        return $this->dateRetour;
+        return $this->dateRetourPrevue;
     }
 
-    public function setDateRetour(\DateTime $dateRetour): static
+    public function setDateRetourPrevue(\DateTime $dateRetourPrevue): static
     {
-        $this->dateRetour = $dateRetour;
+        $this->dateRetourPrevue = $dateRetourPrevue;
 
         return $this;
     }
+
+    public function getDateRetourEffectue(): ?\DateTimeInterface
+{
+    return $this->dateRetourEffectue;
+}
+
+public function setDateRetourEffectue(?\DateTimeInterface $dateRetourEffectue): static
+{
+    $this->dateRetourEffectue = $dateRetourEffectue;
+    return $this;
+}
 
     public function getAdherent(): ?Adherent
     {

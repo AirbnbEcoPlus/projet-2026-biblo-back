@@ -51,6 +51,9 @@ class Adherent
     #[Groups(['adherent:read', 'reservation:read', 'emprunt:read'])]
     private ?string $photo = null;
 
+    #[ORM\Column]
+    private bool $estActif = true;
+
     /**
      * @var Collection<int, Emprunt>
      */
@@ -252,4 +255,16 @@ class Adherent
     {
         return trim(($this->getPrenom() ?? '').' '.($this->getNom() ?? ''));
     }
+
+    public function isEstActif(): bool 
+    {
+        return $this->estActif;
+    }
+
+    public function setEstActif(bool $estActif): static
+    {
+        $this->estActif = $estActif;
+        return $this;
+    }
+
 }
