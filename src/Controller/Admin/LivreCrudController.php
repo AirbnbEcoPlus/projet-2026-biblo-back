@@ -3,24 +3,20 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Livre;
-<<<<<<< HEAD
 use App\Entity\Emprunt;
-=======
+
 use EasyCorp\Bundle\EasyAdminBundle\Config\Assets;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Crud;
->>>>>>> 5de1c725468bec91864129c88336931b17267d6c
+
 use EasyCorp\Bundle\EasyAdminBundle\Controller\AbstractCrudController;
 use EasyCorp\Bundle\EasyAdminBundle\Field\AssociationField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\DateField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\FormField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\IdField;
-<<<<<<< HEAD
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
-=======
-use EasyCorp\Bundle\EasyAdminBundle\Field\LanguageField;
-use EasyCorp\Bundle\EasyAdminBundle\Field\TextareaField;
->>>>>>> 5de1c725468bec91864129c88336931b17267d6c
+
+
 use EasyCorp\Bundle\EasyAdminBundle\Field\TextField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\LanguageField;
 use EasyCorp\Bundle\EasyAdminBundle\Field\UrlField;
@@ -32,7 +28,6 @@ class LivreCrudController extends AbstractCrudController
         return Livre::class;
     }
 
-<<<<<<< HEAD
     public function configureActions(Actions $actions): Actions
     {
         
@@ -43,7 +38,6 @@ class LivreCrudController extends AbstractCrudController
     }
 
     
-=======
     public function configureCrud(Crud $crud): Crud
     {
         return $crud
@@ -61,7 +55,7 @@ class LivreCrudController extends AbstractCrudController
         return $assets->addJsFile('js/google-books-loader.js');
     }
 
->>>>>>> 5de1c725468bec91864129c88336931b17267d6c
+
     public function configureFields(string $pageName): iterable
     {
         return [
