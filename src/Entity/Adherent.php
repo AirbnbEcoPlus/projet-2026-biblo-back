@@ -73,6 +73,8 @@ class Adherent
     #[ORM\OneToOne(mappedBy: 'adherent')]
     private ?Utilisateur $utilisateur = null;
 
+    private ?string $plainPassword = null;
+
     public function __construct()
     {
         $this->emprunts = new ArrayCollection();
@@ -130,6 +132,18 @@ class Adherent
         $this->utilisateur = $utilisateur;
         return $this;
     }   
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(?string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
+
+        return $this;
+    }
 
     public function getDateNaiss(): ?\DateTime
     {

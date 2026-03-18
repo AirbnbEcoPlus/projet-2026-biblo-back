@@ -14,6 +14,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Action;
 use EasyCorp\Bundle\EasyAdminBundle\Config\Actions;
 use EasyCorp\Bundle\EasyAdminBundle\Field\BooleanField;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 
 class AdherentCrudController extends AbstractCrudController
 {
@@ -44,6 +45,9 @@ class AdherentCrudController extends AbstractCrudController
             DateField::new('dateNaiss', 'Date de naissance'),
             DateField::new('dateAdhesion', 'Date d\'adhésion'),
             TextField::new('email')->hideOnIndex(),
+            TextField::new('plainPassword', 'Mot de passe')
+                ->setFormType(PasswordType::class)
+                ->onlyWhenCreating(),
             TextField::new('adressePostale', 'Adresse postale')->hideOnIndex(),
             TextField::new('numTel', 'Téléphone')->hideOnIndex(),
             UrlField::new('photo')->hideOnIndex(),
@@ -68,8 +72,15 @@ class AdherentCrudController extends AbstractCrudController
             'email' => $entityInstance->getEmail(),
         ]);
 
+        $plainPassword = $entityInstance->getPlainPassword();
+
         if ($existing) {
             $existing->setAdherent($entityInstance);
+
+            if ($plainPassword) {
+                $existing->setPassword($this->passwordHasher->hashPassword($existing, $plainPassword));
+            }
+
             $entityManager->flush();
             return;
         }
@@ -80,7 +91,7 @@ class AdherentCrudController extends AbstractCrudController
         $user->setPrenom($entityInstance->getPrenom());
         $user->setRoles(['ROLE_USER']);
 
-        $user->setPassword($this->passwordHasher->hashPassword($user, '1234'));
+        $user->setPassword($this->passwordHasher->hashPassword($user, $plainPassword ?: '1234'));
         $user->setAdherent($entityInstance);
 
         $entityManager->persist($user);
